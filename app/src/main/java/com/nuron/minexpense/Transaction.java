@@ -5,7 +5,7 @@ package com.nuron.minexpense;
  */
 public class Transaction {
 
-    private String id;
+    private long id;
     private String name;
     private String amount;
     private String category;
@@ -13,10 +13,9 @@ public class Transaction {
     private String time;
     private String incomeOrExpense;
 
-    public Transaction(String dataId, String dataNmame,String dataAmount, String dataCategory,
+    public Transaction(String dataNmame,String dataAmount, String dataCategory,
                        String dataArtId,String dataTime,String dataIncomeOrExpense)
     {
-        this.id = dataId;
         this.name = dataNmame;
         this.amount = dataAmount;
         this.category = dataCategory;
@@ -25,7 +24,7 @@ public class Transaction {
         this.incomeOrExpense = dataIncomeOrExpense;
     }
 
-    public String getId() {
+    public long getId() {
         return id;
     }
 

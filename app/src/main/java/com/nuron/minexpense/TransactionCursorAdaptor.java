@@ -66,14 +66,24 @@ public class TransactionCursorAdaptor extends CursorAdapter {
     public void bindView(View view, Context context, Cursor cursor) {
 
         int tag = (int)view.getTag();
-        String data = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
-        if(tag == TYPE_INCOME){
-            // TextView messageText = (TextView)view.findViewById(R.id.text);
-            // messageText.setText(data);
+
+        if(tag == TYPE_INCOME)
+        {
+            String name = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_NAME));
+            TextView nameText = (TextView)view.findViewById(R.id.name);
+            nameText.setText(name);
+            String amount = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_AMOUNT));
+            TextView amountText = (TextView)view.findViewById(R.id.amount);
+            amountText.setText(amount);
         }
         else if(tag == TYPE_EXPENSE)
         {
-            //ImageView messageImage = (ImageView)view.findViewById(R.id.image);
+            String name = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_NAME));
+            TextView nameText = (TextView)view.findViewById(R.id.name);
+            nameText.setText(name);
+            String amount = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_AMOUNT));
+            TextView amountText = (TextView)view.findViewById(R.id.amount);
+            amountText.setText(amount);
         }
     }
 }

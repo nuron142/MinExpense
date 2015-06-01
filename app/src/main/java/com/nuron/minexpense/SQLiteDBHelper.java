@@ -8,6 +8,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 import org.json.JSONException;
 
@@ -17,7 +18,7 @@ import java.util.List;
 public class SQLiteDBHelper extends SQLiteOpenHelper {
 
     private static final int DATABASE_VERSION = 1;
-    public static final String DATABASE_NAME = "Transactions.db";
+    public static final String DATABASE_NAME = "Transactions";
     public static final String TRANSACTION_TABLE_NAME = "TRANSACTIONS";
     public static final String TRANSACTION_ID = "_id";
     public static final String TRANSACTION_NAME = "TRANSACTION_NAME";
@@ -37,15 +38,15 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         db.execSQL(
                 "create table " + TRANSACTION_TABLE_NAME + " " +
-                        "(" + TRANSACTION_ID + " text primary key, "
-                        + TRANSACTION_NAME + " text, "
-                        + TRANSACTION_AMOUNT + " text, "
-                        + TRANSACTION_CATEGORY + " text, "
-                        + TRANSACTION_ARTID + " text, "
-                        + TRANSACTION_TIME + " text, "
-                        + TRANSACTION_INCOMEOREXPENSE + " text)"
+                        "(" + TRANSACTION_ID + " integer primary key autoincrement, "
+                        + TRANSACTION_NAME + " text not null, "
+                        + TRANSACTION_AMOUNT + " text not null, "
+                        + TRANSACTION_CATEGORY + " text not null, "
+                        + TRANSACTION_ARTID + " text not null, "
+                        + TRANSACTION_TIME + " text not null, "
+                        + TRANSACTION_INCOMEOREXPENSE + " text not null)"
         );
-
+        Log.d("4", "create table");
     }
 
 
@@ -62,33 +63,47 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 
     public void deleteTable(){
         SQLiteDatabase db = this.getWritableDatabase();
-        db.execSQL("DROP TABLE IF EXISTS "+ TRANSACTION_TABLE_NAME);
+        db.execSQL("DROP TABLE IF EXISTS " + TRANSACTION_TABLE_NAME);
         db.close();
     }
 
 
-    public void insertTransaction(SQLiteDatabase db, Transaction transactions){
+    public void insertTransactions(SQLiteDatabase db, ArrayList<Transaction> transactions){
 
-        ContentValues contentValues = createRowContent(transactions);
-        db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
+        for(Transaction transaction : transactions){
+            ContentValues contentValues = createRowContent(transaction.getName(),
+                    transaction.getAmount(),transaction.getCategory(),transaction.getArtId(),transaction.getTime(),transaction.getIncomeOrExpense());
+            db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
+        }
+
     }
 
-    private ContentValues createRowContent(Transaction transactions){
+    public void insertTransaction(Transaction transaction){
+        SQLiteDatabase db = this.getWritableDatabase();
+            Log.d("1","insert transactions");
+            ContentValues contentValues = createRowContent(transaction.getName(),
+                    transaction.getAmount(),transaction.getCategory(),transaction.getArtId(),transaction.getTime(),transaction.getIncomeOrExpense());
+            db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
 
+
+    }
+
+    private ContentValues createRowContent(String transactionName, String transactionAmount, String transactionCategory,
+                                           String transactionArtId,String transactionTime,String transactionIncomeOrExpense){
+
+        Log.d("3","create row content");
         ContentValues contentValues = new ContentValues();
-        contentValues.put(TRANSACTION_ID, transactions.getId());
-        contentValues.put(TRANSACTION_NAME, transactions.getName());
-        contentValues.put(TRANSACTION_AMOUNT, transactions.getAmount());
-        contentValues.put(TRANSACTION_CATEGORY, transactions.getCategory());
-        contentValues.put(TRANSACTION_ARTID, transactions.getArtId());
-        contentValues.put(TRANSACTION_TIME, transactions.getTime());
-        contentValues.put(TRANSACTION_INCOMEOREXPENSE, transactions.getIncomeOrExpense());
+        contentValues.put(TRANSACTION_NAME, transactionName);
+        contentValues.put(TRANSACTION_AMOUNT,transactionAmount );
+        contentValues.put(TRANSACTION_CATEGORY, transactionCategory);
+        contentValues.put(TRANSACTION_ARTID, transactionArtId);
+        contentValues.put(TRANSACTION_TIME, transactionTime);
+        contentValues.put(TRANSACTION_INCOMEOREXPENSE, transactionIncomeOrExpense);
         return contentValues;
     }
 
-
-
     public Cursor getMessages(){
+        Log.d("2","get transactions");
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery( "select * from "+ TRANSACTION_TABLE_NAME, null);
     }

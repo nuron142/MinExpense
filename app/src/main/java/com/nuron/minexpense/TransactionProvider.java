@@ -25,7 +25,6 @@ public class TransactionProvider extends ContentProvider {
 
     SQLiteDBHelper sqliteDBHelper;
 
-
     @Override
     public boolean onCreate() {
         sqliteDBHelper = new SQLiteDBHelper(getContext());
