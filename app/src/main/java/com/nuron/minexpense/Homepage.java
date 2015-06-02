@@ -48,9 +48,8 @@ public class Homepage extends ListActivity implements LoaderManager.LoaderCallba
         setListAdapter(mAdapter);
 
         mAdapter.addBackground(SwipeDirections.DIRECTION_FAR_LEFT,R.layout.row_bg_left_far)
-                .addBackground(SwipeDirections.DIRECTION_NORMAL_LEFT,R.layout.row_bg_left)
                 .addBackground(SwipeDirections.DIRECTION_FAR_RIGHT,R.layout.row_bg_right_far)
-                .addBackground(SwipeDirections.DIRECTION_NORMAL_RIGHT,R.layout.row_bg_right);
+                .setFarSwipeFraction(0.4);
         getLoaderManager().initLoader(0, null, this);
 
     }
@@ -100,14 +99,13 @@ public class Homepage extends ListActivity implements LoaderManager.LoaderCallba
                     dir = "Far right";
                     break;
                 case SwipeDirections.DIRECTION_NORMAL_RIGHT:
-                    AlertDialog.Builder builder = new AlertDialog.Builder(this);
-                    builder.setTitle("Test Dialog").setMessage("You swiped right").create().show();
                     dir = "Right";
                     break;
             }
+            Transaction transaction = mAdapter.getItem(position);
             Toast.makeText(
                     this,
-                    dir + " swipe Action triggered on " + mAdapter.getItem(position),
+                    dir + " swipe Action triggered on " + transaction.getName(),
                     Toast.LENGTH_SHORT
             ).show();
             mAdapter.notifyDataSetChanged();
