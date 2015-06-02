@@ -68,16 +68,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     }
 
 
-    public void insertTransactions(SQLiteDatabase db, ArrayList<Transaction> transactions){
-
-        for(Transaction transaction : transactions){
-            ContentValues contentValues = createRowContent(transaction.getName(),
-                    transaction.getAmount(),transaction.getCategory(),transaction.getArtId(),transaction.getTime(),transaction.getIncomeOrExpense());
-            db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
-        }
-
-    }
-
     public void insertTransaction(Transaction transaction){
         SQLiteDatabase db = this.getWritableDatabase();
             Log.d("1","insert transactions");
