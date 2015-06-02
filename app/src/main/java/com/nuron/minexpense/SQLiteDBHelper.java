@@ -84,8 +84,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
             ContentValues contentValues = createRowContent(transaction.getName(),
                     transaction.getAmount(),transaction.getCategory(),transaction.getArtId(),transaction.getTime(),transaction.getIncomeOrExpense());
             db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
-
-
     }
 
     private ContentValues createRowContent(String transactionName, String transactionAmount, String transactionCategory,
@@ -108,9 +106,23 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         return db.rawQuery( "select * from "+ TRANSACTION_TABLE_NAME, null);
     }
 
+    public void updateTransaction(Transaction transaction){
+        SQLiteDatabase db = this.getWritableDatabase();
+            Log.d("1","insert transactions");
+            ContentValues contentValues = createRowContent(transaction.getName(),
+                    transaction.getAmount(),transaction.getCategory(),transaction.getArtId(),transaction.getTime(),transaction.getIncomeOrExpense());
+            db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
+    }
 
+    public void deleteTransaction(Transaction transaction){
+        SQLiteDatabase db = this.getWritableDatabase();
+            Log.d("1","insert transactions");
+            ContentValues contentValues = createRowContent(transaction.getName(),
+                    transaction.getAmount(),transaction.getCategory(),transaction.getArtId(),transaction.getTime(),transaction.getIncomeOrExpense());
+            db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
+    }
 
-
+    
 }
 
 
