@@ -8,12 +8,8 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.net.Uri;
 import android.util.Log;
-
-import org.json.JSONException;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class SQLiteDBHelper extends SQLiteOpenHelper {
 
@@ -70,49 +66,58 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 
     public void insertTransaction(Transaction transaction){
         SQLiteDatabase db = this.getWritableDatabase();
-            Log.d("1","insert transactions");
-            ContentValues contentValues = createRowContent(transaction.getName(),
-                    transaction.getAmount(),transaction.getCategory(),transaction.getArtId(),transaction.getTime(),transaction.getIncomeOrExpense());
-            db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
+        Log.d("1", "insert transactions");
+        ContentValues contentValues = createRowContent(transaction);
+        db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
     }
 
-    private ContentValues createRowContent(String transactionName, String transactionAmount, String transactionCategory,
-                                           String transactionArtId,String transactionTime,String transactionIncomeOrExpense){
+    private ContentValues createRowContent(Transaction transaction){
 
         Log.d("3","create row content");
         ContentValues contentValues = new ContentValues();
-        contentValues.put(TRANSACTION_NAME, transactionName);
-        contentValues.put(TRANSACTION_AMOUNT,transactionAmount );
-        contentValues.put(TRANSACTION_CATEGORY, transactionCategory);
-        contentValues.put(TRANSACTION_ARTID, transactionArtId);
-        contentValues.put(TRANSACTION_TIME, transactionTime);
-        contentValues.put(TRANSACTION_INCOMEOREXPENSE, transactionIncomeOrExpense);
+        contentValues.put(TRANSACTION_NAME, transaction.getName());
+        contentValues.put(TRANSACTION_AMOUNT,transaction.getAmount());
+        contentValues.put(TRANSACTION_CATEGORY, transaction.getCategory());
+        contentValues.put(TRANSACTION_ARTID, transaction.getArtId());
+        contentValues.put(TRANSACTION_TIME, transaction.getTime());
+        contentValues.put(TRANSACTION_INCOMEOREXPENSE, transaction.getIncomeOrExpense());
         return contentValues;
     }
 
     public Cursor getMessages(){
-        Log.d("2","get transactions");
+        Log.d("2", "get transactions");
         SQLiteDatabase db = this.getReadableDatabase();
         return db.rawQuery( "select * from "+ TRANSACTION_TABLE_NAME, null);
     }
 
     public void updateTransaction(Transaction transaction){
         SQLiteDatabase db = this.getWritableDatabase();
-            Log.d("1","insert transactions");
-            ContentValues contentValues = createRowContent(transaction.getName(),
-                    transaction.getAmount(),transaction.getCategory(),transaction.getArtId(),transaction.getTime(),transaction.getIncomeOrExpense());
-            db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
+        Log.d("1","insert transactions");
+        ContentValues contentValues = createRowContent(transaction);
+        db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
     }
 
-    public void deleteTransaction(Transaction transaction){
+    public String getTransactionID(Cursor cursor,int position){
         SQLiteDatabase db = this.getWritableDatabase();
-            Log.d("1","insert transactions");
-            ContentValues contentValues = createRowContent(transaction.getName(),
-                    transaction.getAmount(),transaction.getCategory(),transaction.getArtId(),transaction.getTime(),transaction.getIncomeOrExpense());
-            db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
+        Log.d("1","get transaction id");
+        cursor.moveToPosition(position);
+        String id = cursor.getString(cursor.getColumnIndex(TRANSACTION_ID));
+        return id;
     }
 
-    
+    public Transaction getTransactionfromCursor(Cursor cursor)
+    {
+        Log.d("getItem","I am here 4");
+        Transaction transaction = new Transaction(cursor.getString(cursor.getColumnIndex(TRANSACTION_NAME)),
+                cursor.getString(cursor.getColumnIndex(TRANSACTION_AMOUNT)),
+                cursor.getString(cursor.getColumnIndex(TRANSACTION_CATEGORY)),
+                cursor.getString(cursor.getColumnIndex(TRANSACTION_ARTID)),
+                cursor.getString(cursor.getColumnIndex(TRANSACTION_TIME)),
+                cursor.getString(cursor.getColumnIndex(TRANSACTION_INCOMEOREXPENSE)));
+
+        return transaction;
+    }
+
 }
 
 

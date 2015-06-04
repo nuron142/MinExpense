@@ -10,6 +10,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -23,6 +24,7 @@ public class Homepage extends ListActivity implements LoaderManager.LoaderCallba
 
     private TransactionCursorAdaptor messageCursorAdapter;
     protected SwipeActionAdapter mAdapter;
+    private SQLiteDBHelper sqliteDBHelper;
 
 
     @Override
@@ -30,12 +32,11 @@ public class Homepage extends ListActivity implements LoaderManager.LoaderCallba
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_homepage);
 
-        SQLiteDBHelper sqliteDBHelper = new SQLiteDBHelper(this);
+        sqliteDBHelper = new SQLiteDBHelper(this);
 
-        sqliteDBHelper.insertTransaction(new Transaction("Sonu","10","b","c","d","0"));
-        sqliteDBHelper.insertTransaction(new Transaction("Sunil","20","b","c","d","1"));
-        sqliteDBHelper.insertTransaction(new Transaction("Priyanka","100","b","c","d","0"));
-
+        sqliteDBHelper.insertTransaction(new Transaction("Pari","10","a","b","c","0"));
+        sqliteDBHelper.insertTransaction(new Transaction("Pari","100","a","b","c","1"));
+        sqliteDBHelper.insertTransaction(new Transaction("Sunil","10","a","b","c","0"));
         Cursor cursor = sqliteDBHelper.getMessages();
 
         messageCursorAdapter = new TransactionCursorAdaptor(this, cursor);
@@ -48,8 +49,9 @@ public class Homepage extends ListActivity implements LoaderManager.LoaderCallba
         setListAdapter(mAdapter);
 
         mAdapter.addBackground(SwipeDirections.DIRECTION_FAR_LEFT,R.layout.row_bg_left_far)
+                .addBackground(SwipeDirections.DIRECTION_NORMAL_LEFT,R.layout.row_bg_left)
                 .addBackground(SwipeDirections.DIRECTION_FAR_RIGHT,R.layout.row_bg_right_far)
-                .setFarSwipeFraction(0.4);
+                .addBackground(SwipeDirections.DIRECTION_NORMAL_RIGHT,R.layout.row_bg_right);
         getLoaderManager().initLoader(0, null, this);
 
     }
@@ -78,7 +80,8 @@ public class Homepage extends ListActivity implements LoaderManager.LoaderCallba
 
     @Override
     public boolean shouldDismiss(int position, int direction){
-        return direction == SwipeDirections.DIRECTION_NORMAL_LEFT;
+        //return direction == SwipeDirections.DIRECTION_NORMAL_LEFT;
+        return false;
     }
 
     @Override
@@ -96,19 +99,18 @@ public class Homepage extends ListActivity implements LoaderManager.LoaderCallba
                     dir = "Left";
                     break;
                 case SwipeDirections.DIRECTION_FAR_RIGHT:
-                    dir = "Far right";
+                    Cursor cursor = ((TransactionCursorAdaptor)mAdapter.getAdapter()).getCursor();
+                    Uri uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + sqliteDBHelper.getTransactionID(cursor,position));
+                    getContentResolver().delete(uri, null, null);
+                    Log.d("getItem", "I am here 6");
+                    //mAdapter.notifyDataSetChanged();
                     break;
                 case SwipeDirections.DIRECTION_NORMAL_RIGHT:
                     dir = "Right";
                     break;
             }
-            Transaction transaction = mAdapter.getItem(position);
-            Toast.makeText(
-                    this,
-                    dir + " swipe Action triggered on " + transaction.getName(),
-                    Toast.LENGTH_SHORT
-            ).show();
-            mAdapter.notifyDataSetChanged();
+            Log.d("getItem","I am here 5");
+
         }
     }
 }
