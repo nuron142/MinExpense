@@ -139,6 +139,7 @@ public class TransactionProvider extends ContentProvider {
         int updateCount = db.update(sqliteDBHelper.TRANSACTION_TABLE_NAME, contentValues, selection, selectionArgs);
         getContext().getContentResolver().notifyChange(uri, null);
         return updateCount;
+        
     }
 }
 
