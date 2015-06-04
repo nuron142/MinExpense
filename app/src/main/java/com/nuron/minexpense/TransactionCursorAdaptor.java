@@ -22,7 +22,6 @@ public class TransactionCursorAdaptor extends CursorAdapter {
         super(context, cursor, true);
     }
 
-
     @Override
     public int getItemViewType(int position) {
         Cursor cursor = (Cursor)getItem(position);

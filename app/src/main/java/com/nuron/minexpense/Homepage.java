@@ -40,7 +40,6 @@ public class Homepage extends ListActivity implements LoaderManager.LoaderCallba
         Cursor cursor = sqliteDBHelper.getMessages();
 
         messageCursorAdapter = new TransactionCursorAdaptor(this, cursor);
-        //setListAdapter(messageCursorAdapter);
 
         mAdapter = new SwipeActionAdapter(messageCursorAdapter);
         mAdapter.setSwipeActionListener(this)
