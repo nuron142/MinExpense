@@ -26,12 +26,14 @@ public class Income extends Activity {
         final EditText date = (EditText) findViewById(R.id.add_date);
 
         Intent intent = getIntent();
-        Bundle transactionBundle = intent.getExtras();
-
-        name.setText(transactionBundle.getString("name"));
-        amount.setText(transactionBundle.getString("amount"));
-        category.setText(transactionBundle.getString("category"));
-        date.setText(transactionBundle.getString("time"));
+        Bundle transactionBundle = getIntent().getExtras();
+        if(transactionBundle != null)
+        {
+            name.setText(transactionBundle.getString("name"));
+            amount.setText(transactionBundle.getString("amount"));
+            category.setText(transactionBundle.getString("category"));
+            date.setText(transactionBundle.getString("time"));
+        }
 
         Button save  = (Button) findViewById(R.id.save);
         save.setOnClickListener(new View.OnClickListener() {

@@ -68,5 +68,10 @@ public class Homepage extends Activity implements LoaderManager.LoaderCallbacks<
         transactionCursorAdapter.swapCursor(null);
     }
 
+    @Override
+    public void onResume() {
+        super.onResume();
+        getContentResolver().notifyChange(TransactionProvider.CONTENT_URI,null);
+    }
 }
 
