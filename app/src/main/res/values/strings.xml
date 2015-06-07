@@ -2,7 +2,8 @@
 <resources>
 
     <string name="app_name">MinExpense</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="add_expense_page">Add Expense</string>
+    <string name="add_income_page">Add Income</string>
     <string name="action_settings">Settings</string>
 
 </resources>

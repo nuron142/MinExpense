@@ -1,35 +1,20 @@
 package com.nuron.minexpense;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.app.LoaderManager;
-import android.content.ContentValues;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
-import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
-import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
-import android.widget.Toast;
-
-import com.wdullaer.swipeactionadapter.SwipeActionAdapter;
-import com.wdullaer.swipeactionadapter.SwipeDirections;
-
-import java.util.jar.Attributes;
-
 
 public class Homepage extends Activity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private TransactionCursorAdaptor transactionCursorAdapter;
-    protected SwipeActionAdapter mAdapter;
     private SQLiteDBHelper sqliteDBHelper;
     private  ListView mListView;
 
@@ -51,19 +36,8 @@ public class Homepage extends Activity implements LoaderManager.LoaderCallbacks<
         add_expense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Intent intent = new Intent("com.nuron.minexpense.EXPENSE");
-
-//                intent.putExtra("message", "Hello From MainActivity");
-//
-//                // 3. or you can add data to a bundle
-//                Bundle extras = new Bundle();
-//                extras.putString("status", "Data Received!");
-//
-//                // 4. add bundle to intent
-//                intent.putExtras(extras);
-
-                // 5. start the activity
-                startActivity(intent);
+               Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
+               startActivity(intent);
             }
         });
 
@@ -71,10 +45,10 @@ public class Homepage extends Activity implements LoaderManager.LoaderCallbacks<
         add_income.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Toast.makeText(Homepage.this, "Income", Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent("com.nuron.minexpense.ADD_INCOME");
+                startActivity(intent);
             }
         });
-
     }
 
 

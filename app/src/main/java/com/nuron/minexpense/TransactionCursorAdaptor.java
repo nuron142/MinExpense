@@ -1,8 +1,10 @@
 package com.nuron.minexpense;
 
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -76,36 +78,84 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
     }
 
     @Override
-    public void bindView(View view, Context context, Cursor cursor) {
+    public void bindView(View view, final Context context, Cursor cursor) {
 
-        final SQLiteDBHelper sqliteDBHelper = new SQLiteDBHelper(context);
         final Context context1=context;
-        int tag = (int)view.getTag();
-        SwipeLayout swipeLayout = (SwipeLayout)view.findViewById(getSwipeLayoutResourceId(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID)));
+        SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
+        final SwipeLayout swipeLayout = (SwipeLayout)view.findViewById(getSwipeLayoutResourceId(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID)));
         swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
         swipeLayout.addDrag(SwipeLayout.DragEdge.Left, view.findViewById(R.id.bottom_layer1));
         swipeLayout.addDrag(SwipeLayout.DragEdge.Right, view.findViewById(R.id.bottom_layer));
 
-        final String name = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_NAME));
+        final Transaction transaction = sqLiteDBHelper.getTransactionfromCursor(cursor);
+
         TextView nameText = (TextView)view.findViewById(R.id.name);
-        nameText.setText(name);
-        String amount = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_AMOUNT));
+        nameText.setText(transaction.getName());
+
         TextView amountText = (TextView)view.findViewById(R.id.amount);
-        amountText.setText(amount);
+        amountText.setText(transaction.getAmount());
 
-        String position = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID));
-
+        final String position = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID));
+        final String incomeOrExpense = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
         final Uri uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + position);
 
         Button delete  = (Button) view.findViewById(R.id.delte_transaction);
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+               // swipeLayout.close();
                 context1.getContentResolver().delete(uri, null, null);
-
             }
         });
 
+        Button edit  = (Button) view.findViewById(R.id.edit_transaction);
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //swipeLayout.close();
+                if(incomeOrExpense.equals("0"))
+                {
+
+                    Intent intent = new Intent("com.nuron.minexpense.ADD_INCOME");
+
+                    Bundle transactionBundle = new Bundle();
+                    transactionBundle.putString("position",Long.toString(transaction.getId()));
+                    transactionBundle.putString("name",transaction.getName());
+                    transactionBundle.putString("amount",transaction.getAmount());
+                    transactionBundle.putString("category",transaction.getCategory());
+                    transactionBundle.putString("artId",transaction.getArtId());
+                    transactionBundle.putString("time",transaction.getTime());
+                    transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
+
+                    intent.putExtras(transactionBundle);
+                    v.getContext().startActivity(intent);
+
+                }
+                else
+                {
+                    //swipeLayout.close();
+                    Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
+
+                    Bundle transactionBundle = new Bundle();
+                    transactionBundle.putString("position",Long.toString(transaction.getId()));
+                    transactionBundle.putString("name",transaction.getName());
+                    transactionBundle.putString("amount",transaction.getAmount());
+                    transactionBundle.putString("category",transaction.getCategory());
+                    transactionBundle.putString("artId",transaction.getArtId());
+                    transactionBundle.putString("time",transaction.getTime());
+                    transactionBundle.putString("incomeOrExpense",transaction.getIncomeOrExpense());
+
+                    intent.putExtras(transactionBundle);
+                    v.getContext().startActivity(intent);
+
+                }
+            }
+        });
+
+        swipeLayout.close();
+
     }
 }
+
 

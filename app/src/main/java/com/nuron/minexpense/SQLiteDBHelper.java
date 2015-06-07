@@ -78,13 +78,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
-//
-//    public void insertTransaction(Transaction transaction){
-//        SQLiteDatabase db = this.getWritableDatabase();
-//        Log.d("1", "insert transactions");
-//        ContentValues contentValues = createRowContent(transaction);
-//        db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
-//    }
 
     public ContentValues createRowContent(Transaction transaction){
 
@@ -115,7 +108,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 
     public Transaction getTransactionfromCursor(Cursor cursor)
     {
-        Log.d("getItem","I am here 4");
         Transaction transaction = new Transaction(cursor.getString(cursor.getColumnIndex(TRANSACTION_NAME)),
                 cursor.getString(cursor.getColumnIndex(TRANSACTION_AMOUNT)),
                 cursor.getString(cursor.getColumnIndex(TRANSACTION_CATEGORY)),

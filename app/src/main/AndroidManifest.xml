@@ -19,12 +19,22 @@
 
         <activity
             android:name="com.nuron.minexpense.Expense"
-            android:label="@string/app_name" >
+            android:label="@string/add_expense_page" >
             <intent-filter>
-                <action android:name="com.nuron.minexpense.EXPENSE" />
+                <action android:name="com.nuron.minexpense.ADD_EXPENSE" />
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </activity>
+
+        <activity
+            android:name="com.nuron.minexpense.Income"
+            android:label="@string/add_income_page" >
+            <intent-filter>
+                <action android:name="com.nuron.minexpense.ADD_INCOME" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+
         <provider
             android:name=".TransactionProvider"
             android:authorities="com.nuron.minexpense.messageprovider"
