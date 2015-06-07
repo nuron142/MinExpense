@@ -3,6 +3,7 @@ package com.nuron.minexpense;
 /**
  * Created by sunil on 24-May-15.
  */
+import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -24,9 +25,11 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     public static final String TRANSACTION_TIME = "TRANSACTION_TIME";
     public static final String TRANSACTION_INCOMEOREXPENSE = "TRANSACTION_INCOMEOREXPENSE";
 
+    private ContentResolver contentResolver;
 
-    public SQLiteDBHelper(Context context){
+    public SQLiteDBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        contentResolver=context.getContentResolver();
     }
 
 
@@ -56,6 +59,18 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         }
     }
 
+    public void insertTransaction(Transaction transaction) {
+
+        ContentValues contentValues = new ContentValues();
+        contentValues.put(TRANSACTION_NAME, transaction.getName());
+        contentValues.put(TRANSACTION_AMOUNT,transaction.getAmount());
+        contentValues.put(TRANSACTION_CATEGORY, transaction.getCategory());
+        contentValues.put(TRANSACTION_ARTID, transaction.getArtId());
+        contentValues.put(TRANSACTION_TIME, transaction.getTime());
+        contentValues.put(TRANSACTION_INCOMEOREXPENSE, transaction.getIncomeOrExpense());
+
+        contentResolver.insert(TransactionProvider.CONTENT_URI, contentValues);
+    }
 
     public void deleteTable(){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -63,15 +78,15 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         db.close();
     }
 
+//
+//    public void insertTransaction(Transaction transaction){
+//        SQLiteDatabase db = this.getWritableDatabase();
+//        Log.d("1", "insert transactions");
+//        ContentValues contentValues = createRowContent(transaction);
+//        db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
+//    }
 
-    public void insertTransaction(Transaction transaction){
-        SQLiteDatabase db = this.getWritableDatabase();
-        Log.d("1", "insert transactions");
-        ContentValues contentValues = createRowContent(transaction);
-        db.insert(TRANSACTION_TABLE_NAME, null, contentValues);
-    }
-
-    private ContentValues createRowContent(Transaction transaction){
+    public ContentValues createRowContent(Transaction transaction){
 
         Log.d("3","create row content");
         ContentValues contentValues = new ContentValues();
@@ -84,16 +99,16 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         return contentValues;
     }
 
-    public Cursor getMessages(){
-        Log.d("2", "get transactions");
-        SQLiteDatabase db = this.getReadableDatabase();
-        return db.rawQuery( "select * from "+ TRANSACTION_TABLE_NAME, null);
-    }
 
     public String getTransactionID(Cursor cursor,int position){
         SQLiteDatabase db = this.getWritableDatabase();
-        Log.d("1","get transaction id");
         cursor.moveToPosition(position);
+        String id = cursor.getString(cursor.getColumnIndex(TRANSACTION_ID));
+        return id;
+    }
+
+    public String getTransactionID(Cursor cursor){
+        cursor.moveToFirst();
         String id = cursor.getString(cursor.getColumnIndex(TRANSACTION_ID));
         return id;
     }

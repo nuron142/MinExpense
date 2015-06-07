@@ -1,23 +1,72 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent" android:layout_height="match_parent"
-    android:background="#81CFE0">
+<com.daimajia.swipe.SwipeLayout
+    xmlns:swipe="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/swipe"
+    android:layout_width="match_parent"
+    android:layout_height="60dp"
+    swipe:leftEdgeSwipeOffset="0dp"
+    swipe:rightEdgeSwipeOffset="0dp">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:id="@+id/name"
-        android:maxWidth="250dp"
-        android:text="Nuron">
-    </TextView>
+    <LinearLayout
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:background="#FF5534"
+        android:gravity="center"
+        android:id="@+id/bottom_layer">
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:padding="5dp"
-        android:id="@+id/amount"
-        android:maxWidth="250dp"
-        android:text="Nuron">
-    </TextView>
-</LinearLayout>
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Delete"
+            android:id="@+id/delte_transaction"
+            android:background="@android:color/holo_red_light"
+            android:textColor="#fff"
+            android:textSize="16sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:background="#FF5534"
+        android:gravity="center"
+        android:id="@+id/bottom_layer1">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Edit"
+            android:id="@+id/edit_transaction"
+            android:background="@android:color/holo_blue_dark"
+            android:textColor="#fff"
+            android:textSize="16sp" />
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center"
+        android:background="#C5EFF7">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:id="@+id/name"
+            android:maxWidth="250dp"
+            android:textSize="20dp"
+            android:layout_gravity="center_vertical"
+            android:text="Nuron">
+        </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:id="@+id/amount"
+            android:maxWidth="250dp"
+            android:textSize="20dp"
+            android:layout_gravity="center_vertical"
+            android:text="Nuron">
+        </TextView>
+    </LinearLayout>
+
+</com.daimajia.swipe.SwipeLayout>
