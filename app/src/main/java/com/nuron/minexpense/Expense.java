@@ -29,13 +29,16 @@ public class Expense extends FragmentActivity {
     private SQLiteDBHelper sqLiteDBHelper;
     boolean update=false;
     Uri uri;
+    Utilities utilities;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.expense);
         sqLiteDBHelper = new SQLiteDBHelper(this);
 
+        utilities=new Utilities();
 
         final EditText name = (EditText) findViewById(R.id.add_name);
         final EditText amount = (EditText) findViewById(R.id.add_amount);
@@ -49,7 +52,7 @@ public class Expense extends FragmentActivity {
             name.setText(transactionBundle.getString("name"));
             amount.setText(transactionBundle.getString("amount"));
             category.setText(transactionBundle.getString("category"));
-            date.setText(transactionBundle.getString("time"));
+            date.setText(utilities.getDateFormat(transactionBundle.getString("date"), utilities.FROM_DB_TO_EDIT_TEXT));
             uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + transactionBundle.getString("position"));
         }
 
@@ -61,8 +64,8 @@ public class Expense extends FragmentActivity {
                 Transaction transaction = new Transaction(name.getText().toString(),
                         amount.getText().toString(),
                         category.getText().toString(),
-                        "b",
-                        date.getText().toString(),"1");
+                        "b", utilities.getDateFormat(date.getText().toString(), utilities.FROM_EDIT_TEXT_TO_DB),
+                        Integer.toString(utilities.TYPE_EXPENSE));
 
                 ContentValues contentValues = sqLiteDBHelper.createRowContent(transaction);
                 if (update)
@@ -88,28 +91,24 @@ public class Expense extends FragmentActivity {
         {
             String month="",day="";
 
-            if(monthOfYear < 10){
-
+            if(monthOfYear < 10)
                 month = "0" + Integer.toString(monthOfYear+1);
-            }
             else
                 month = Integer.toString(monthOfYear+1);
 
-            if(dayOfMonth < 10){
-
+            if(dayOfMonth < 10)
                 day  = "0" + dayOfMonth ;
-            }
             else
                 day = Integer.toString(dayOfMonth);
 
-            String selectedDate = day + "/" + month  + "/" + String.valueOf(year);
-
+            String selectedDate = utilities.getDateFormat(String.valueOf(year) + "-" + month + "-" + day, utilities.FROM_DATE_PICKER_TO_EDIT_TEXT);
             EditText date = (EditText) findViewById(R.id.add_date);
             date.setText(selectedDate);
         }
     };
 
-    private void showDatePicker() {
+    private void showDatePicker()
+    {
         DatePickerFragment date = new DatePickerFragment();
 
         Calendar calender = Calendar.getInstance();
@@ -121,4 +120,5 @@ public class Expense extends FragmentActivity {
         date.setCallBack(ondate);
         date.show(getSupportFragmentManager(), "Date Picker");
     }
+
 }

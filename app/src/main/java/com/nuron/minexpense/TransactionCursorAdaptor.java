@@ -18,6 +18,9 @@ import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.CursorSwipeAdapter;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+
 /**
  * Created by sunil on 24-May-15.
  */
@@ -25,9 +28,12 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
 
     private static final int TYPE_INCOME = 0;
     private static final int TYPE_EXPENSE = 1;
+    Utilities utilities;
+
 
     public TransactionCursorAdaptor(Context context, Cursor cursor) {
         super(context, cursor, true);
+        utilities=new Utilities();
     }
 
     @Override
@@ -49,9 +55,9 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
     private int getItemViewType(Cursor cursor){
         String type = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
         if (type.equals("0")) {
-            return TYPE_INCOME;
+            return utilities.TYPE_INCOME;
         } else if(type.equals("1")){
-            return TYPE_EXPENSE;
+            return utilities.TYPE_EXPENSE;
         }else{
             return -1;
         }
@@ -96,8 +102,8 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         TextView amountText = (TextView)view.findViewById(R.id.amount);
         amountText.setText(transaction.getAmount());
 
-
-        ((TextView)view.findViewById(R.id.date)).setText(transaction.getTime());
+        TextView dateText = (TextView)view.findViewById(R.id.date);
+        dateText.setText(utilities.getDateFormat(transaction.getTime(), utilities.FROM_DB_TO_LIST_VIEW));
 
         final String position = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID));
         final String incomeOrExpense = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
@@ -126,7 +132,7 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
                     transactionBundle.putString("amount", transaction.getAmount());
                     transactionBundle.putString("category", transaction.getCategory());
                     transactionBundle.putString("artId", transaction.getArtId());
-                    transactionBundle.putString("time", transaction.getTime());
+                    transactionBundle.putString("date", transaction.getTime());
                     transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
 
                     intent.putExtras(transactionBundle);
@@ -141,7 +147,7 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
                     transactionBundle.putString("amount", transaction.getAmount());
                     transactionBundle.putString("category", transaction.getCategory());
                     transactionBundle.putString("artId", transaction.getArtId());
-                    transactionBundle.putString("time", transaction.getTime());
+                    transactionBundle.putString("date", transaction.getTime());
                     transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
 
                     intent.putExtras(transactionBundle);
@@ -155,6 +161,8 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
 
 
     }
+
+
 }
 
 
