@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -103,7 +104,7 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               // swipeLayout.close();
+                swipeLayout.close();
                 context1.getContentResolver().delete(uri, null, null);
             }
         });
@@ -113,47 +114,42 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
             @Override
             public void onClick(View v) {
 
-                //swipeLayout.close();
-                if(incomeOrExpense.equals("0"))
-                {
-
+                if (incomeOrExpense.equals("0")) {
                     Intent intent = new Intent("com.nuron.minexpense.ADD_INCOME");
 
                     Bundle transactionBundle = new Bundle();
-                    transactionBundle.putString("position",Long.toString(transaction.getId()));
-                    transactionBundle.putString("name",transaction.getName());
-                    transactionBundle.putString("amount",transaction.getAmount());
-                    transactionBundle.putString("category",transaction.getCategory());
-                    transactionBundle.putString("artId",transaction.getArtId());
-                    transactionBundle.putString("time",transaction.getTime());
+                    transactionBundle.putString("position", position);
+                    transactionBundle.putString("name", transaction.getName());
+                    transactionBundle.putString("amount", transaction.getAmount());
+                    transactionBundle.putString("category", transaction.getCategory());
+                    transactionBundle.putString("artId", transaction.getArtId());
+                    transactionBundle.putString("time", transaction.getTime());
+                    transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
+
+                    intent.putExtras(transactionBundle);
+                    v.getContext().startActivity(intent);
+
+                } else {
+                    Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
+
+                    Bundle transactionBundle = new Bundle();
+                    transactionBundle.putString("position", position);
+                    transactionBundle.putString("name", transaction.getName());
+                    transactionBundle.putString("amount", transaction.getAmount());
+                    transactionBundle.putString("category", transaction.getCategory());
+                    transactionBundle.putString("artId", transaction.getArtId());
+                    transactionBundle.putString("time", transaction.getTime());
                     transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
 
                     intent.putExtras(transactionBundle);
                     v.getContext().startActivity(intent);
 
                 }
-                else
-                {
-                    //swipeLayout.close();
-                    Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
-
-                    Bundle transactionBundle = new Bundle();
-                    transactionBundle.putString("position",Long.toString(transaction.getId()));
-                    transactionBundle.putString("name",transaction.getName());
-                    transactionBundle.putString("amount",transaction.getAmount());
-                    transactionBundle.putString("category",transaction.getCategory());
-                    transactionBundle.putString("artId",transaction.getArtId());
-                    transactionBundle.putString("time",transaction.getTime());
-                    transactionBundle.putString("incomeOrExpense",transaction.getIncomeOrExpense());
-
-                    intent.putExtras(transactionBundle);
-                    v.getContext().startActivity(intent);
-
-                }
+                swipeLayout.close();
             }
         });
 
-        swipeLayout.close();
+
 
     }
 }

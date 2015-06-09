@@ -9,6 +9,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
+import android.util.Log;
 
 /**
  * Created by sunil on 29-May-15.
@@ -124,20 +125,26 @@ public class TransactionProvider extends ContentProvider {
     public int update(Uri uri, ContentValues contentValues, String selection, String[] selectionArgs) {
 
         SQLiteDatabase db = sqliteDBHelper.getWritableDatabase();
+        int updateCount = 0;
+
         switch (uriMatcher.match(uri)) {
             case TRANSACTIONS:
                 //do nothing
                 break;
             case TRANSACTIONS_ID:
-                String id = uri.getPathSegments().get(1);
-                selection = sqliteDBHelper.TRANSACTION_ID + "=" + id
-                        + (!TextUtils.isEmpty(selection) ?
-                        " AND (" + selection + ')' : "");
+
+                String id = uri.getLastPathSegment();
+//                String where = sqliteDBHelper.TRANSACTION_ID + " = " + uri.getLastPathSegment();
+//                if (TextUtils.isEmpty(selection)) {
+//                    where += " AND "+ selection;
+//                }
+                updateCount = db.update(sqliteDBHelper.TRANSACTION_TABLE_NAME,contentValues,sqliteDBHelper.TRANSACTION_ID + "=" + id,selectionArgs);
+                Log.d("updateCount", "updateCount = " + updateCount);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
-        int updateCount = db.update(sqliteDBHelper.TRANSACTION_TABLE_NAME, contentValues, selection, selectionArgs);
+
         getContext().getContentResolver().notifyChange(uri, null);
         return updateCount;
     }
