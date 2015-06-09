@@ -138,8 +138,8 @@ public class TransactionProvider extends ContentProvider {
 //                if (TextUtils.isEmpty(selection)) {
 //                    where += " AND "+ selection;
 //                }
+
                 updateCount = db.update(sqliteDBHelper.TRANSACTION_TABLE_NAME,contentValues,sqliteDBHelper.TRANSACTION_ID + "=" + id,selectionArgs);
-                Log.d("updateCount", "updateCount = " + updateCount);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);

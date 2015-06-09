@@ -1,21 +1,31 @@
 package com.nuron.minexpense;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * Created by sunil on 07-Jun-15.
  */
-public class Expense extends Activity {
+public class Expense extends FragmentActivity {
     private SQLiteDBHelper sqLiteDBHelper;
     boolean update=false;
     Uri uri;
@@ -35,7 +45,6 @@ public class Expense extends Activity {
         Bundle transactionBundle = getIntent().getExtras();
         if(transactionBundle != null)
         {
-            Log.d("position","Position = " + transactionBundle.getString("position") );
             update=true;
             name.setText(transactionBundle.getString("name"));
             amount.setText(transactionBundle.getString("amount"));
@@ -43,8 +52,6 @@ public class Expense extends Activity {
             date.setText(transactionBundle.getString("time"));
             uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + transactionBundle.getString("position"));
         }
-
-
 
         Button save  = (Button) findViewById(R.id.save);
         save.setOnClickListener(new View.OnClickListener() {
@@ -65,5 +72,53 @@ public class Expense extends Activity {
                 finish();
             }
         });
+
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePicker();
+            }
+        });
+    }
+
+    DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener()
+    {
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear,int dayOfMonth)
+        {
+            String month="",day="";
+
+            if(monthOfYear < 10){
+
+                month = "0" + Integer.toString(monthOfYear+1);
+            }
+            else
+                month = Integer.toString(monthOfYear+1);
+
+            if(dayOfMonth < 10){
+
+                day  = "0" + dayOfMonth ;
+            }
+            else
+                day = Integer.toString(dayOfMonth);
+
+            String selectedDate = day + "/" + month  + "/" + String.valueOf(year);
+
+            EditText date = (EditText) findViewById(R.id.add_date);
+            date.setText(selectedDate);
+        }
+    };
+
+    private void showDatePicker() {
+        DatePickerFragment date = new DatePickerFragment();
+
+        Calendar calender = Calendar.getInstance();
+        Bundle args = new Bundle();
+        args.putInt("year", calender.get(Calendar.YEAR));
+        args.putInt("month", calender.get(Calendar.MONTH));
+        args.putInt("day", calender.get(Calendar.DAY_OF_MONTH));
+        date.setArguments(args);
+        date.setCallBack(ondate);
+        date.show(getSupportFragmentManager(), "Date Picker");
     }
 }

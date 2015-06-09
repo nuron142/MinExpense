@@ -96,6 +96,9 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         TextView amountText = (TextView)view.findViewById(R.id.amount);
         amountText.setText(transaction.getAmount());
 
+
+        ((TextView)view.findViewById(R.id.date)).setText(transaction.getTime());
+
         final String position = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID));
         final String incomeOrExpense = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
         final Uri uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + position);

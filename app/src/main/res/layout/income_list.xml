@@ -52,7 +52,7 @@
             android:padding="5dp"
             android:id="@+id/name"
             android:maxWidth="250dp"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:layout_gravity="center_vertical"
             android:text="Nuron">
         </TextView>
@@ -63,10 +63,22 @@
             android:padding="5dp"
             android:id="@+id/amount"
             android:maxWidth="250dp"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:layout_gravity="center_vertical"
             android:text="Nuron">
         </TextView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:padding="5dp"
+            android:id="@+id/date"
+            android:maxWidth="250dp"
+            android:textSize="20sp"
+            android:layout_gravity="center_vertical"
+            android:text="09/06/2015">
+        </TextView>
+
     </LinearLayout>
 
 </com.daimajia.swipe.SwipeLayout>

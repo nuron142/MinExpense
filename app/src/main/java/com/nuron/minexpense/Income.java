@@ -1,18 +1,23 @@
 package com.nuron.minexpense;
 
 import android.app.Activity;
+import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
 import android.view.View;
 import android.widget.Button;
+import android.widget.DatePicker;
 import android.widget.EditText;
+
+import java.util.Calendar;
 
 /**
  * Created by sunil on 07-Jun-15.
  */
-public class Income extends Activity {
+public class Income extends FragmentActivity {
     private SQLiteDBHelper sqLiteDBHelper;
     boolean update=false;
     Uri uri;
@@ -22,7 +27,6 @@ public class Income extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.expense);
         sqLiteDBHelper = new SQLiteDBHelper(this);
-
 
         final EditText name = (EditText) findViewById(R.id.add_name);
         final EditText amount = (EditText) findViewById(R.id.add_amount);
@@ -40,13 +44,10 @@ public class Income extends Activity {
             uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + transactionBundle.getString("position"));
         }
 
-
-
         Button save  = (Button) findViewById(R.id.save);
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-
 
                 Transaction transaction = new Transaction(name.getText().toString(),
                         amount.getText().toString(),
@@ -62,5 +63,53 @@ public class Income extends Activity {
                 finish();
             }
         });
+
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePicker();
+            }
+        });
+    }
+
+    DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener()
+    {
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear,int dayOfMonth)
+        {
+            String month="",day="";
+
+            if(monthOfYear < 10){
+
+                month = "0" + Integer.toString(monthOfYear+1);
+            }
+            else
+                month = Integer.toString(monthOfYear+1);
+
+            if(dayOfMonth < 10){
+
+                day  = "0" + dayOfMonth ;
+            }
+            else
+                day = Integer.toString(dayOfMonth);
+
+            String selectedDate= day + "/" + month  + "/" + String.valueOf(year);
+
+            EditText date = (EditText) findViewById(R.id.add_date);
+            date.setText(selectedDate);
+        }
+    };
+
+    private void showDatePicker() {
+        DatePickerFragment date = new DatePickerFragment();
+
+        Calendar calender = Calendar.getInstance();
+        Bundle args = new Bundle();
+        args.putInt("year", calender.get(Calendar.YEAR));
+        args.putInt("month", calender.get(Calendar.MONTH));
+        args.putInt("day", calender.get(Calendar.DAY_OF_MONTH));
+        date.setArguments(args);
+        date.setCallBack(ondate);
+        date.show(getSupportFragmentManager(), "Date Picker");
     }
 }
