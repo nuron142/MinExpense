@@ -1,31 +1,22 @@
 package com.nuron.minexpense;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
-import android.content.Intent;
-import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
-import android.util.Log;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
-import java.util.Date;
 
 /**
  * Created by sunil on 07-Jun-15.
  */
-public class Expense extends FragmentActivity {
+public class Expense extends AppCompatActivity {
     private SQLiteDBHelper sqLiteDBHelper;
     boolean update=false;
     Uri uri;
@@ -37,6 +28,9 @@ public class Expense extends FragmentActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.expense);
         sqLiteDBHelper = new SQLiteDBHelper(this);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
 
         utilities=new Utilities();
 
@@ -89,7 +83,7 @@ public class Expense extends FragmentActivity {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear,int dayOfMonth)
         {
-            String month="",day="";
+            String month,day;
 
             if(monthOfYear < 10)
                 month = "0" + Integer.toString(monthOfYear+1);

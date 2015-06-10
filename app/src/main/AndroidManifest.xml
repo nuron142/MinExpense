@@ -18,7 +18,8 @@
 
         <activity
             android:name="com.nuron.minexpense.Expense"
-            android:label="@string/add_expense_page" >
+            android:label="@string/add_expense_page"
+            android:theme="@style/AppTheme">
             <intent-filter>
                 <action android:name="com.nuron.minexpense.ADD_EXPENSE" />
                 <category android:name="android.intent.category.DEFAULT" />

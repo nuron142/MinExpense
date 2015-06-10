@@ -3,13 +3,17 @@
     android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
 
+    <include
+        android:id="@+id/tool_bar"
+        layout="@layout/tool_bar"/>
+
     <LinearLayout
         android:orientation="vertical"
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="7"
+        android:layout_weight="8"
         android:layout_marginLeft="16dp"
-        android:layout_marginTop="16dp"
+        android:layout_marginTop="24dp"
         android:padding="0dp"
         android:layout_marginRight="16dp">
 
@@ -18,10 +22,12 @@
             android:layout_height="0dp"
             android:layout_weight="1"
             android:layout_margin="10dp"
-            android:orientation="vertical">
+            android:orientation="vertical"
+            >
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:layout_gravity="left"
                 android:text="Name"
@@ -29,7 +35,8 @@
 
             <EditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="2"
                 android:id="@+id/add_name"
                 android:padding="0dp"
                 />
@@ -43,7 +50,8 @@
             android:orientation="vertical">
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:layout_gravity="left"
                 android:text="Amount"
@@ -51,7 +59,8 @@
 
             <EditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="2"
                 android:id="@+id/add_amount"
                 android:paddingLeft="0dp"
                 />
@@ -65,7 +74,8 @@
             android:orientation="vertical">
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:layout_gravity="left"
                 android:text="Category"
@@ -73,7 +83,8 @@
 
             <EditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="2"
                 android:id="@+id/add_category"
                 android:paddingLeft="0dp"
                 />
@@ -82,12 +93,13 @@
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="0dp"
-            android:layout_weight="1.2"
+            android:layout_weight="1"
             android:layout_margin="10dp"
             android:orientation="vertical">
             <TextView
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
                 android:gravity="center"
                 android:layout_gravity="left"
                 android:text="Date"
@@ -95,7 +107,8 @@
 
             <EditText
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="2"
                 android:id="@+id/add_date"
                 android:layout_marginTop="10dp"
                 android:focusable="false"
@@ -106,11 +119,62 @@
 
     </LinearLayout>
 
-
-    <LinearLayout
-        android:layout_width="match_parent"
+    <HorizontalScrollView
+        android:id="@+id/hsv"
+        android:layout_width="fill_parent"
         android:layout_height="0dp"
-        android:layout_weight="2"/>
+        android:layout_weight="1.2"
+        android:layout_alignParentTop="true"
+        android:fillViewport="true"
+        android:measureAllChildren="false"
+        android:scrollbars="none" >
+        <LinearLayout
+            android:id="@+id/innerLay"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:layout_gravity="center_horizontal"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="fill_parent"
+                android:padding="10dp"
+                android:src="@drawable/star"
+                android:background="@android:color/holo_red_light"/>
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="fill_parent"
+                android:padding="10dp"
+                android:src="@drawable/star"
+                android:background="@android:color/holo_red_light"/>
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="fill_parent"
+                android:padding="10dp"
+                android:src="@drawable/star"
+                android:background="@android:color/holo_red_light"/>
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="fill_parent"
+                android:padding="10dp"
+                android:src="@drawable/star"
+                android:background="@android:color/holo_red_light"/>
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="fill_parent"
+                android:padding="10dp"
+                android:src="@drawable/star"
+                android:background="@android:color/holo_red_light"/>
+            <ImageView
+                android:layout_width="80dp"
+                android:layout_height="fill_parent"
+                android:padding="10dp"
+                android:src="@drawable/star"
+                android:background="@android:color/holo_red_light"/>
+        </LinearLayout>
+    </HorizontalScrollView>
+
 
     <Button
         android:layout_width="match_parent"
