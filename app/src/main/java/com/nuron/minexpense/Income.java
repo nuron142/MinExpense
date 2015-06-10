@@ -7,6 +7,8 @@ import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.FragmentActivity;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.DatePicker;
@@ -19,7 +21,7 @@ import java.util.Calendar;
 /**
  * Created by sunil on 07-Jun-15.
  */
-public class Income extends FragmentActivity {
+public class Income extends AppCompatActivity {
     private SQLiteDBHelper sqLiteDBHelper;
     boolean update=false;
     Uri uri;
@@ -32,12 +34,16 @@ public class Income extends FragmentActivity {
         setContentView(R.layout.expense);
         sqLiteDBHelper = new SQLiteDBHelper(this);
 
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
+
         utilities=new Utilities();
 
         final EditText name = (EditText) findViewById(R.id.add_name);
         final EditText amount = (EditText) findViewById(R.id.add_amount);
         final EditText category = (EditText) findViewById(R.id.add_category);
         final EditText date = (EditText) findViewById(R.id.add_date);
+
 
         Bundle transactionBundle = getIntent().getExtras();
         if(transactionBundle != null)
@@ -54,6 +60,8 @@ public class Income extends FragmentActivity {
         save.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                //TextInputLayout usernameTextInputLayout = (TextInputLayout) v.findViewById(R.id.add_name_textinput);
 
                 Transaction transaction = new Transaction(name.getText().toString(),
                         amount.getText().toString(),
@@ -84,7 +92,7 @@ public class Income extends FragmentActivity {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear,int dayOfMonth)
         {
-            String month="",day="";
+            String month,day;
 
             if(monthOfYear < 10)
                 month = "0" + Integer.toString(monthOfYear+1);
@@ -96,7 +104,7 @@ public class Income extends FragmentActivity {
             else
                 day = Integer.toString(dayOfMonth);
 
-            String selectedDate = utilities.getDateFormat(String.valueOf(year)+ "-" + month + "-"+ day,utilities.FROM_DATE_PICKER_TO_EDIT_TEXT);
+            String selectedDate = utilities.getDateFormat(String.valueOf(year) + "-" + month + "-" + day, utilities.FROM_DATE_PICKER_TO_EDIT_TEXT);
             EditText date = (EditText) findViewById(R.id.add_date);
             date.setText(selectedDate);
         }

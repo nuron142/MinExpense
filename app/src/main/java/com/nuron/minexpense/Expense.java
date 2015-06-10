@@ -57,8 +57,8 @@ public class Expense extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                TextInputLayout usernameTextInputLayout = (TextInputLayout) v.findViewById(R.id.add_name_textinput);
-                
+                //TextInputLayout usernameTextInputLayout = (TextInputLayout) v.findViewById(R.id.add_name_textinput);
+
                 Transaction transaction = new Transaction(name.getText().toString(),
                         amount.getText().toString(),
                         category.getText().toString(),
