@@ -4,6 +4,7 @@ import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
@@ -39,6 +40,7 @@ public class Expense extends AppCompatActivity {
         final EditText category = (EditText) findViewById(R.id.add_category);
         final EditText date = (EditText) findViewById(R.id.add_date);
 
+
         Bundle transactionBundle = getIntent().getExtras();
         if(transactionBundle != null)
         {
@@ -55,10 +57,13 @@ public class Expense extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
+                TextInputLayout usernameTextInputLayout = (TextInputLayout) v.findViewById(R.id.add_name_textinput);
+                
                 Transaction transaction = new Transaction(name.getText().toString(),
                         amount.getText().toString(),
                         category.getText().toString(),
-                        "b", utilities.getDateFormat(date.getText().toString(), utilities.FROM_EDIT_TEXT_TO_DB),
+                        "b",
+                        utilities.getDateFormat(date.getText().toString(), utilities.FROM_EDIT_TEXT_TO_DB),
                         Integer.toString(utilities.TYPE_EXPENSE));
 
                 ContentValues contentValues = sqLiteDBHelper.createRowContent(transaction);
