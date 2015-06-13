@@ -1,4 +1,4 @@
-package com.nuron.minexpense;
+package com.nuron.minexpense.Utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,10 +8,10 @@ import java.text.SimpleDateFormat;
  */
 public class Utilities {
 
-    public final int FROM_DATE_PICKER_TO_EDIT_TEXT = 1;
-    public final int FROM_DB_TO_EDIT_TEXT = 2;
-    public final int FROM_EDIT_TEXT_TO_DB = 3;
-    public final int FROM_DB_TO_LIST_VIEW = 4;
+    public static final int FROM_DATE_PICKER_TO_EDIT_TEXT = 1;
+    public static final int FROM_DB_TO_EDIT_TEXT = 2;
+    public static final int FROM_EDIT_TEXT_TO_DB = 3;
+    public static final int FROM_DB_TO_LIST_VIEW = 4;
 
     public static final int TYPE_INCOME = 0;
     public static final int TYPE_EXPENSE = 1;

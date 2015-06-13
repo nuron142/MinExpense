@@ -1,31 +1,61 @@
-package com.nuron.minexpense;
+package com.nuron.minexpense.Activities;
 
-import android.app.Activity;
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
-import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.FragmentActivity;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import com.nuron.minexpense.Adapters.RecyclerAdapter;
+import com.nuron.minexpense.Utilities.DatePickerFragment;
+import com.nuron.minexpense.R;
+import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
+import com.nuron.minexpense.DBHelper.Transaction;
+import com.nuron.minexpense.DBHelper.TransactionProvider;
+import com.nuron.minexpense.Utilities.Utilities;
+
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by sunil on 07-Jun-15.
  */
-public class Income extends AppCompatActivity {
-    private SQLiteDBHelper sqLiteDBHelper;
+public class Expense extends AppCompatActivity implements AdapterView.OnItemSelectedListener{
     boolean update=false;
     Uri uri;
     Utilities utilities;
+    DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener()
+    {
+        @Override
+        public void onDateSet(DatePicker view, int year, int monthOfYear,int dayOfMonth)
+        {
+            String month,day;
+
+            if(monthOfYear < 10)
+                month = "0" + Integer.toString(monthOfYear+1);
+            else
+                month = Integer.toString(monthOfYear+1);
+
+            if(dayOfMonth < 10)
+                day  = "0" + dayOfMonth ;
+            else
+                day = Integer.toString(dayOfMonth);
+
+            String selectedDate = utilities.getDateFormat(String.valueOf(year) + "-" + month + "-" + day, Utilities.FROM_DATE_PICKER_TO_EDIT_TEXT);
+            EditText date = (EditText) findViewById(R.id.add_date);
+            date.setText(selectedDate);
+        }
+    };
+    private SQLiteDBHelper sqLiteDBHelper;
 
     @Override
     protected void onCreate(Bundle savedInstanceState)
@@ -36,6 +66,26 @@ public class Income extends AppCompatActivity {
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
+
+        RecyclerView rv = (RecyclerView)findViewById(R.id.image_list);
+        rv.setHasFixedSize(true);
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
+        rv.setLayoutManager(layoutManager);
+
+        List<Integer> artImageId;
+        artImageId = new ArrayList<>();
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.trash);
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.trash);
+
+
+        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(artImageId);
+        rv.setAdapter(recyclerAdapter);
 
         utilities=new Utilities();
 
@@ -52,7 +102,7 @@ public class Income extends AppCompatActivity {
             name.setText(transactionBundle.getString("name"));
             amount.setText(transactionBundle.getString("amount"));
             category.setText(transactionBundle.getString("category"));
-            date.setText(utilities.getDateFormat(transactionBundle.getString("date"), utilities.FROM_DB_TO_EDIT_TEXT));
+            date.setText(utilities.getDateFormat(transactionBundle.getString("date"), Utilities.FROM_DB_TO_EDIT_TEXT));
             uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + transactionBundle.getString("position"));
         }
 
@@ -67,8 +117,8 @@ public class Income extends AppCompatActivity {
                         amount.getText().toString(),
                         category.getText().toString(),
                         "b",
-                        utilities.getDateFormat(date.getText().toString(), utilities.FROM_EDIT_TEXT_TO_DB),
-                        Integer.toString(utilities.TYPE_INCOME));
+                        utilities.getDateFormat(date.getText().toString(), Utilities.FROM_EDIT_TEXT_TO_DB),
+                        Integer.toString(Utilities.TYPE_EXPENSE));
 
                 ContentValues contentValues = sqLiteDBHelper.createRowContent(transaction);
                 if (update)
@@ -87,29 +137,6 @@ public class Income extends AppCompatActivity {
         });
     }
 
-    DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener()
-    {
-        @Override
-        public void onDateSet(DatePicker view, int year, int monthOfYear,int dayOfMonth)
-        {
-            String month,day;
-
-            if(monthOfYear < 10)
-                month = "0" + Integer.toString(monthOfYear+1);
-            else
-                month = Integer.toString(monthOfYear+1);
-
-            if(dayOfMonth < 10)
-                day  = "0" + dayOfMonth ;
-            else
-                day = Integer.toString(dayOfMonth);
-
-            String selectedDate = utilities.getDateFormat(String.valueOf(year) + "-" + month + "-" + day, utilities.FROM_DATE_PICKER_TO_EDIT_TEXT);
-            EditText date = (EditText) findViewById(R.id.add_date);
-            date.setText(selectedDate);
-        }
-    };
-
     private void showDatePicker()
     {
         DatePickerFragment date = new DatePickerFragment();
@@ -124,4 +151,13 @@ public class Income extends AppCompatActivity {
         date.show(getSupportFragmentManager(), "Date Picker");
     }
 
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> parent) {
+
+    }
 }

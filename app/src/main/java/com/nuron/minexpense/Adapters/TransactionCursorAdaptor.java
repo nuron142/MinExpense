@@ -1,25 +1,23 @@
-package com.nuron.minexpense;
+package com.nuron.minexpense.Adapters;
 
 import android.content.Context;
 import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.CursorAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.daimajia.swipe.SimpleSwipeListener;
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.CursorSwipeAdapter;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import com.nuron.minexpense.R;
+import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
+import com.nuron.minexpense.DBHelper.Transaction;
+import com.nuron.minexpense.DBHelper.TransactionProvider;
+import com.nuron.minexpense.Utilities.Utilities;
 
 /**
  * Created by sunil on 24-May-15.
@@ -54,12 +52,13 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
 
     private int getItemViewType(Cursor cursor){
         String type = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
-        if (type.equals("0")) {
-            return utilities.TYPE_INCOME;
-        } else if(type.equals("1")){
-            return utilities.TYPE_EXPENSE;
-        }else{
-            return -1;
+        switch (type) {
+            case "0":
+                return Utilities.TYPE_INCOME;
+            case "1":
+                return Utilities.TYPE_EXPENSE;
+            default:
+                return -1;
         }
     }
 
@@ -87,7 +86,6 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
 
-        final Context context1=context;
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
         final SwipeLayout swipeLayout = (SwipeLayout)view.findViewById(getSwipeLayoutResourceId(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID)));
         swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
@@ -103,7 +101,7 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         amountText.setText(transaction.getAmount());
 
         TextView dateText = (TextView)view.findViewById(R.id.date);
-        dateText.setText(utilities.getDateFormat(transaction.getTime(), utilities.FROM_DB_TO_LIST_VIEW));
+        dateText.setText(utilities.getDateFormat(transaction.getTime(), Utilities.FROM_DB_TO_LIST_VIEW));
 
         final String position = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID));
         final String incomeOrExpense = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
@@ -113,8 +111,8 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         delete.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                swipeLayout.close();
-                context1.getContentResolver().delete(uri, null, null);
+
+                context.getContentResolver().delete(uri, null, null);
             }
         });
 
@@ -158,7 +156,7 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
             }
         });
 
-
+       swipeLayout.close();
 
     }
 

@@ -17,7 +17,7 @@
         </activity>
 
         <activity
-            android:name="com.nuron.minexpense.Expense"
+            android:name=".Activities.Expense"
             android:label="@string/add_expense_page"
             android:theme="@style/AppTheme">
             <intent-filter>
@@ -27,7 +27,7 @@
         </activity>
 
         <activity
-            android:name="com.nuron.minexpense.Income"
+            android:name=".Activities.Income"
             android:label="@string/add_income_page" >
             <intent-filter>
                 <action android:name="com.nuron.minexpense.ADD_INCOME" />
@@ -36,7 +36,7 @@
         </activity>
 
         <provider
-            android:name=".TransactionProvider"
+            android:name=".DBHelper.TransactionProvider"
             android:authorities="com.nuron.minexpense.messageprovider"
             android:exported="false" />
     </application>

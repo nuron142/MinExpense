@@ -1,4 +1,4 @@
-package com.nuron.minexpense;
+package com.nuron.minexpense.DBHelper;
 
 /**
  * Created by sunil on 24-May-15.

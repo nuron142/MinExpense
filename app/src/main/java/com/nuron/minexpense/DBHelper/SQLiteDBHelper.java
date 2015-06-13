@@ -1,4 +1,4 @@
-package com.nuron.minexpense;
+package com.nuron.minexpense.DBHelper;
 
 /**
  * Created by sunil on 24-May-15.
@@ -9,12 +9,10 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
-import android.net.Uri;
 import android.util.Log;
 
 public class SQLiteDBHelper extends SQLiteOpenHelper {
 
-    private static final int DATABASE_VERSION = 1;
     public static final String DATABASE_NAME = "Transactions";
     public static final String TRANSACTION_TABLE_NAME = "TRANSACTIONS";
     public static final String TRANSACTION_ID = "_id";
@@ -24,7 +22,7 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     public static final String TRANSACTION_ARTID = "TRANSACTION_ARTID";
     public static final String TRANSACTION_TIME = "TRANSACTION_TIME";
     public static final String TRANSACTION_INCOMEOREXPENSE = "TRANSACTION_INCOMEOREXPENSE";
-
+    private static final int DATABASE_VERSION = 1;
     private ContentResolver contentResolver;
 
     public SQLiteDBHelper(Context context) {
@@ -59,18 +57,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         }
     }
 
-    public void insertTransaction(Transaction transaction) {
-
-        ContentValues contentValues = new ContentValues();
-        contentValues.put(TRANSACTION_NAME, transaction.getName());
-        contentValues.put(TRANSACTION_AMOUNT,transaction.getAmount());
-        contentValues.put(TRANSACTION_CATEGORY, transaction.getCategory());
-        contentValues.put(TRANSACTION_ARTID, transaction.getArtId());
-        contentValues.put(TRANSACTION_TIME, transaction.getTime());
-        contentValues.put(TRANSACTION_INCOMEOREXPENSE, transaction.getIncomeOrExpense());
-
-        contentResolver.insert(TransactionProvider.CONTENT_URI, contentValues);
-    }
 
     public void deleteTable(){
         SQLiteDatabase db = this.getWritableDatabase();
@@ -93,29 +79,16 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
     }
 
 
-    public String getTransactionID(Cursor cursor,int position){
-        SQLiteDatabase db = this.getWritableDatabase();
-        cursor.moveToPosition(position);
-        String id = cursor.getString(cursor.getColumnIndex(TRANSACTION_ID));
-        return id;
-    }
-
-    public String getTransactionID(Cursor cursor){
-        cursor.moveToFirst();
-        String id = cursor.getString(cursor.getColumnIndex(TRANSACTION_ID));
-        return id;
-    }
 
     public Transaction getTransactionfromCursor(Cursor cursor)
     {
-        Transaction transaction = new Transaction(cursor.getString(cursor.getColumnIndex(TRANSACTION_NAME)),
+
+        return new Transaction(cursor.getString(cursor.getColumnIndex(TRANSACTION_NAME)),
                 cursor.getString(cursor.getColumnIndex(TRANSACTION_AMOUNT)),
                 cursor.getString(cursor.getColumnIndex(TRANSACTION_CATEGORY)),
                 cursor.getString(cursor.getColumnIndex(TRANSACTION_ARTID)),
                 cursor.getString(cursor.getColumnIndex(TRANSACTION_TIME)),
                 cursor.getString(cursor.getColumnIndex(TRANSACTION_INCOMEOREXPENSE)));
-
-        return transaction;
     }
 
 }

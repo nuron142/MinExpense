@@ -1,7 +1,6 @@
-package com.nuron.minexpense;
+package com.nuron.minexpense.DBHelper;
 
 import android.content.ContentProvider;
-import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -9,7 +8,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
-import android.util.Log;
+
+import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
 
 /**
  * Created by sunil on 29-May-15.
@@ -43,7 +43,7 @@ public class TransactionProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         SQLiteDatabase db = sqliteDBHelper.getWritableDatabase();
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(sqliteDBHelper.TRANSACTION_TABLE_NAME);
+        queryBuilder.setTables(SQLiteDBHelper.TRANSACTION_TABLE_NAME);
 
         switch (uriMatcher.match(uri)) {
             case TRANSACTIONS:
@@ -51,7 +51,7 @@ public class TransactionProvider extends ContentProvider {
                 break;
             case TRANSACTIONS_ID:
                 String id = uri.getPathSegments().get(1);
-                queryBuilder.appendWhere(sqliteDBHelper.TRANSACTION_ID + "=" + id);
+                queryBuilder.appendWhere(SQLiteDBHelper.TRANSACTION_ID + "=" + id);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
@@ -76,10 +76,10 @@ public class TransactionProvider extends ContentProvider {
 
         SQLiteDatabase db = sqliteDBHelper.getWritableDatabase();
 
-        long id = 0;
+        long id;
         switch (uriType) {
             case TRANSACTIONS:
-                id = db.insert(sqliteDBHelper.TRANSACTION_TABLE_NAME,null, contentValues);
+                id = db.insert(SQLiteDBHelper.TRANSACTION_TABLE_NAME,null, contentValues);
                 break;
             default:
                 throw new IllegalArgumentException("Unknown URI: " + uri);
@@ -92,11 +92,11 @@ public class TransactionProvider extends ContentProvider {
     public int delete(Uri uri, String selection, String[] selectionArgs) {
         int uriType = uriMatcher.match(uri);
         SQLiteDatabase dB = sqliteDBHelper.getWritableDatabase();
-        int rowsDeleted = 0;
+        int rowsDeleted;
 
         switch (uriType) {
             case TRANSACTIONS:
-                rowsDeleted = dB.delete(sqliteDBHelper.TRANSACTION_TABLE_NAME,
+                rowsDeleted = dB.delete(SQLiteDBHelper.TRANSACTION_TABLE_NAME,
                         selection,
                         selectionArgs);
                 break;
@@ -104,12 +104,12 @@ public class TransactionProvider extends ContentProvider {
             case TRANSACTIONS_ID:
                 String id = uri.getLastPathSegment();
                 if (TextUtils.isEmpty(selection)) {
-                    rowsDeleted = dB.delete(sqliteDBHelper.TRANSACTION_TABLE_NAME,
-                            sqliteDBHelper.TRANSACTION_ID + "=" + id,
+                    rowsDeleted = dB.delete(SQLiteDBHelper.TRANSACTION_TABLE_NAME,
+                            SQLiteDBHelper.TRANSACTION_ID + "=" + id,
                             null);
                 } else {
-                    rowsDeleted = dB.delete(sqliteDBHelper.TRANSACTION_TABLE_NAME,
-                            sqliteDBHelper.TRANSACTION_ID + "=" + id
+                    rowsDeleted = dB.delete(SQLiteDBHelper.TRANSACTION_TABLE_NAME,
+                            SQLiteDBHelper.TRANSACTION_ID + "=" + id
                                     + " and " + selection,
                             selectionArgs);
                 }
@@ -139,7 +139,7 @@ public class TransactionProvider extends ContentProvider {
 //                    where += " AND "+ selection;
 //                }
 
-                updateCount = db.update(sqliteDBHelper.TRANSACTION_TABLE_NAME,contentValues,sqliteDBHelper.TRANSACTION_ID + "=" + id,selectionArgs);
+                updateCount = db.update(SQLiteDBHelper.TRANSACTION_TABLE_NAME,contentValues, SQLiteDBHelper.TRANSACTION_ID + "=" + id,selectionArgs);
                 break;
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);

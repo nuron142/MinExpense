@@ -1,8 +1,9 @@
-package com.nuron.minexpense;
+package com.nuron.minexpense.Utilities;
 
 import android.app.DatePickerDialog;
 import android.app.Dialog;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.app.DialogFragment;
 
 /**
@@ -10,6 +11,7 @@ import android.support.v4.app.DialogFragment;
  */
 public class DatePickerFragment extends DialogFragment {
     DatePickerDialog.OnDateSetListener ondateSet;
+    private int year, month, day;
 
     public DatePickerFragment() {
     }
@@ -17,8 +19,6 @@ public class DatePickerFragment extends DialogFragment {
     public void setCallBack(DatePickerDialog.OnDateSetListener ondate) {
         ondateSet = ondate;
     }
-
-    private int year, month, day;
 
     @Override
     public void setArguments(Bundle args) {
@@ -28,6 +28,7 @@ public class DatePickerFragment extends DialogFragment {
         day = args.getInt("day");
     }
 
+    @NonNull
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
         return new DatePickerDialog(getActivity(), ondateSet, year, month, day);

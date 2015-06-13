@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <com.daimajia.swipe.SwipeLayout
-    xmlns:swipe="http://schemas.android.com/apk/res-auto"
     xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:swipe="http://schemas.android.com/apk/res-auto"
     android:id="@+id/swipe"
     android:layout_width="match_parent"
     android:layout_height="40dp"
@@ -9,76 +9,81 @@
     swipe:rightEdgeSwipeOffset="0dp">
 
     <LinearLayout
+        android:id="@+id/bottom_layer"
         android:layout_width="100dp"
         android:layout_height="match_parent"
         android:background="#FF5534"
-        android:gravity="center"
-        android:id="@+id/bottom_layer">
+        android:gravity="center">
 
         <Button
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:text="Delete"
             android:id="@+id/delte_transaction"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:background="@android:color/holo_red_light"
+            android:text="Delete"
             android:textColor="#fff"
             android:textSize="16sp" />
     </LinearLayout>
     <LinearLayout
+        android:id="@+id/bottom_layer1"
         android:layout_width="100dp"
         android:layout_height="match_parent"
         android:background="#FF5534"
-        android:gravity="center"
-        android:id="@+id/bottom_layer1">
+        android:gravity="center">
 
         <Button
+            android:id="@+id/edit_transaction"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:text="Edit"
-            android:id="@+id/edit_transaction"
             android:background="@android:color/holo_blue_dark"
+            android:text="Edit"
             android:textColor="#fff"
             android:textSize="16sp" />
     </LinearLayout>
-    <LinearLayout
+    <android.support.v7.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:gravity="center"
-        android:background="#F1A9A0">
+        android:layout_height="match_parent">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:id="@+id/name"
-            android:maxWidth="250dp"
-            android:textSize="20dp"
-            android:layout_gravity="center_vertical"
-            android:text="Nuron">
-        </TextView>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center">
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:id="@+id/amount"
-            android:maxWidth="250dp"
-            android:textSize="20dp"
-            android:layout_gravity="center_vertical"
-            android:text="Nuron">
-        </TextView>
+            <TextView
+                android:id="@+id/name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:maxWidth="250dp"
+                android:padding="5dp"
+                android:text="Nuron"
+                android:textSize="20dp">
+            </TextView>
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:padding="5dp"
-            android:id="@+id/date"
-            android:maxWidth="250dp"
-            android:textSize="20dp"
-            android:layout_gravity="center_vertical"
-            android:text="09/06/2015">
-        </TextView>
+            <TextView
+                android:id="@+id/amount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:maxWidth="250dp"
+                android:padding="5dp"
+                android:text="Nuron"
+                android:textSize="20dp">
+            </TextView>
 
-    </LinearLayout>
+            <TextView
+                android:id="@+id/date"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:maxWidth="250dp"
+                android:padding="5dp"
+                android:text="09/06/2015"
+                android:textSize="20dp">
+            </TextView>
+
+        </LinearLayout>
+
+    </android.support.v7.widget.CardView>
 
 </com.daimajia.swipe.SwipeLayout>

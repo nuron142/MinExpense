@@ -1,88 +1,37 @@
-package com.nuron.minexpense;
+package com.nuron.minexpense.Activities;
 
 import android.app.DatePickerDialog;
 import android.content.ContentValues;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
+
+import com.nuron.minexpense.Adapters.RecyclerAdapter;
+import com.nuron.minexpense.Utilities.DatePickerFragment;
+import com.nuron.minexpense.R;
+import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
+import com.nuron.minexpense.DBHelper.Transaction;
+import com.nuron.minexpense.DBHelper.TransactionProvider;
+import com.nuron.minexpense.Utilities.Utilities;
+
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
 
 /**
  * Created by sunil on 07-Jun-15.
  */
-public class Expense extends AppCompatActivity {
-    private SQLiteDBHelper sqLiteDBHelper;
+public class Income extends AppCompatActivity {
     boolean update=false;
     Uri uri;
     Utilities utilities;
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.expense);
-        sqLiteDBHelper = new SQLiteDBHelper(this);
-
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
-
-        utilities=new Utilities();
-
-        final EditText name = (EditText) findViewById(R.id.add_name);
-        final EditText amount = (EditText) findViewById(R.id.add_amount);
-        final EditText category = (EditText) findViewById(R.id.add_category);
-        final EditText date = (EditText) findViewById(R.id.add_date);
-
-
-        Bundle transactionBundle = getIntent().getExtras();
-        if(transactionBundle != null)
-        {
-            update=true;
-            name.setText(transactionBundle.getString("name"));
-            amount.setText(transactionBundle.getString("amount"));
-            category.setText(transactionBundle.getString("category"));
-            date.setText(utilities.getDateFormat(transactionBundle.getString("date"), utilities.FROM_DB_TO_EDIT_TEXT));
-            uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + transactionBundle.getString("position"));
-        }
-
-        Button save  = (Button) findViewById(R.id.save);
-        save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-
-                //TextInputLayout usernameTextInputLayout = (TextInputLayout) v.findViewById(R.id.add_name_textinput);
-
-                Transaction transaction = new Transaction(name.getText().toString(),
-                        amount.getText().toString(),
-                        category.getText().toString(),
-                        "b",
-                        utilities.getDateFormat(date.getText().toString(), utilities.FROM_EDIT_TEXT_TO_DB),
-                        Integer.toString(utilities.TYPE_EXPENSE));
-
-                ContentValues contentValues = sqLiteDBHelper.createRowContent(transaction);
-                if (update)
-                    getContentResolver().update(uri, contentValues, null, null);
-                else
-                    getContentResolver().insert(TransactionProvider.CONTENT_URI, contentValues);
-                finish();
-            }
-        });
-
-        date.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                showDatePicker();
-            }
-        });
-    }
-
     DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener()
     {
         @Override
@@ -100,11 +49,92 @@ public class Expense extends AppCompatActivity {
             else
                 day = Integer.toString(dayOfMonth);
 
-            String selectedDate = utilities.getDateFormat(String.valueOf(year) + "-" + month + "-" + day, utilities.FROM_DATE_PICKER_TO_EDIT_TEXT);
+            String selectedDate = utilities.getDateFormat(String.valueOf(year) + "-" + month + "-" + day, Utilities.FROM_DATE_PICKER_TO_EDIT_TEXT);
             EditText date = (EditText) findViewById(R.id.add_date);
             date.setText(selectedDate);
         }
     };
+    private SQLiteDBHelper sqLiteDBHelper;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState)
+    {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.expense);
+        sqLiteDBHelper = new SQLiteDBHelper(this);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
+
+        RecyclerView rv = (RecyclerView)findViewById(R.id.image_list);
+        rv.setHasFixedSize(true);
+        LinearLayoutManager layoutManager
+                = new LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false);
+
+        rv.setLayoutManager(layoutManager);
+
+        List<Integer> artImageId;
+        artImageId = new ArrayList<>();
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.trash);
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.trash);
+
+
+        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(artImageId);
+        rv.setAdapter(recyclerAdapter);
+
+        utilities=new Utilities();
+
+        final EditText name = (EditText) findViewById(R.id.add_name);
+        final EditText amount = (EditText) findViewById(R.id.add_amount);
+        final EditText category = (EditText) findViewById(R.id.add_category);
+        final EditText date = (EditText) findViewById(R.id.add_date);
+
+
+        Bundle transactionBundle = getIntent().getExtras();
+        if(transactionBundle != null)
+        {
+            update=true;
+            name.setText(transactionBundle.getString("name"));
+            amount.setText(transactionBundle.getString("amount"));
+            category.setText(transactionBundle.getString("category"));
+            date.setText(utilities.getDateFormat(transactionBundle.getString("date"), Utilities.FROM_DB_TO_EDIT_TEXT));
+            uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + transactionBundle.getString("position"));
+        }
+
+        Button save  = (Button) findViewById(R.id.save);
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                //TextInputLayout usernameTextInputLayout = (TextInputLayout) v.findViewById(R.id.add_name_textinput);
+
+                Transaction transaction = new Transaction(name.getText().toString(),
+                        amount.getText().toString(),
+                        category.getText().toString(),
+                        "b",
+                        utilities.getDateFormat(date.getText().toString(), Utilities.FROM_EDIT_TEXT_TO_DB),
+                        Integer.toString(Utilities.TYPE_INCOME));
+
+                ContentValues contentValues = sqLiteDBHelper.createRowContent(transaction);
+                if (update)
+                    getContentResolver().update(uri, contentValues, null, null);
+                else
+                    getContentResolver().insert(TransactionProvider.CONTENT_URI, contentValues);
+                finish();
+            }
+        });
+
+        date.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                showDatePicker();
+            }
+        });
+    }
 
     private void showDatePicker()
     {
