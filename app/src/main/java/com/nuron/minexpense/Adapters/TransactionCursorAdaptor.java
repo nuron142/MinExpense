@@ -5,10 +5,12 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
@@ -103,6 +105,12 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         TextView dateText = (TextView)view.findViewById(R.id.date);
         dateText.setText(utilities.getDateFormat(transaction.getTime(), Utilities.FROM_DB_TO_LIST_VIEW));
 
+        TextView categoryText = (TextView)view.findViewById(R.id.category);
+        categoryText.setText(transaction.getCategory());
+
+        ImageView artImage = (ImageView)view.findViewById(R.id.artImage);
+        artImage.setImageResource(getResourceId(Integer.parseInt(transaction.getArtId())));
+
         final String position = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID));
         final String incomeOrExpense = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
         final Uri uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + position);
@@ -157,6 +165,24 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         });
 
        swipeLayout.close();
+
+    }
+
+    private int getResourceId(int artID)
+    {
+        switch (artID)
+        {
+            case 0:
+                return R.drawable.star;
+            case 1:
+                return R.drawable.star;
+            case 2:
+                return R.drawable.trash;
+            case 3:
+                return R.drawable.star;
+            default:
+                return R.drawable.star;
+        }
 
     }
 

@@ -28,7 +28,7 @@ import java.util.List;
 /**
  * Created by sunil on 07-Jun-15.
  */
-public class Income extends AppCompatActivity {
+public class Income extends AppCompatActivity{
     boolean update=false;
     Uri uri;
     Utilities utilities;
@@ -73,17 +73,9 @@ public class Income extends AppCompatActivity {
 
         rv.setLayoutManager(layoutManager);
 
-        List<Integer> artImageId;
-        artImageId = new ArrayList<>();
-        artImageId.add(R.drawable.star);
-        artImageId.add(R.drawable.star);
-        artImageId.add(R.drawable.trash);
-        artImageId.add(R.drawable.star);
-        artImageId.add(R.drawable.star);
-        artImageId.add(R.drawable.trash);
+        List<Integer> artImageId = addImageId();
 
-
-        RecyclerAdapter recyclerAdapter = new RecyclerAdapter(artImageId);
+        final RecyclerAdapter recyclerAdapter = new RecyclerAdapter(artImageId);
         rv.setAdapter(recyclerAdapter);
 
         utilities=new Utilities();
@@ -101,6 +93,9 @@ public class Income extends AppCompatActivity {
             name.setText(transactionBundle.getString("name"));
             amount.setText(transactionBundle.getString("amount"));
             category.setText(transactionBundle.getString("category"));
+            int selectedId=Integer.parseInt(transactionBundle.getString("artId"));
+            if(selectedId != -1)
+                recyclerAdapter.setSelectedItem(selectedId);
             date.setText(utilities.getDateFormat(transactionBundle.getString("date"), Utilities.FROM_DB_TO_EDIT_TEXT));
             uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + transactionBundle.getString("position"));
         }
@@ -110,12 +105,10 @@ public class Income extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                //TextInputLayout usernameTextInputLayout = (TextInputLayout) v.findViewById(R.id.add_name_textinput);
-
                 Transaction transaction = new Transaction(name.getText().toString(),
                         amount.getText().toString(),
                         category.getText().toString(),
-                        "b",
+                        Integer.toString(recyclerAdapter.getSelectedItem()),
                         utilities.getDateFormat(date.getText().toString(), Utilities.FROM_EDIT_TEXT_TO_DB),
                         Integer.toString(Utilities.TYPE_INCOME));
 
@@ -150,4 +143,15 @@ public class Income extends AppCompatActivity {
         date.show(getSupportFragmentManager(), "Date Picker");
     }
 
+    private List<Integer> addImageId(){
+        List<Integer> artImageId;
+        artImageId = new ArrayList<>();
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.trash);
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.trash);
+        return artImageId;
+    }
 }

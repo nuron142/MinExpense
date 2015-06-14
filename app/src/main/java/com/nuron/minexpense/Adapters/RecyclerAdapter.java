@@ -19,7 +19,7 @@ import java.util.List;
 public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ArtImageViewHolder> {
 
     List<Integer> artImageID;
-    int oldSelectedItem =-1,newSelectedItem=-1;
+    int newSelectedItem=-1;
     public RecyclerAdapter(List<Integer> imageIDs){
         this.artImageID = imageIDs;
     }
@@ -51,6 +51,15 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ArtIma
         return artImageID.size();
     }
 
+    public int getSelectedItem(){
+        return newSelectedItem;
+    }
+
+    public void setSelectedItem(int id){
+        newSelectedItem=id;
+        notifyDataSetChanged();
+    }
+
     public class ArtImageViewHolder extends RecyclerView.ViewHolder{
 
         ImageView artImageView;
@@ -70,6 +79,6 @@ public class RecyclerAdapter extends RecyclerView.Adapter<RecyclerAdapter.ArtIma
                 }
             });
         }
-
     }
+
 }

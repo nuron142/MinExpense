@@ -59,7 +59,6 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
         });
     }
 
-
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         Uri uri = TransactionProvider.CONTENT_URI;
@@ -79,7 +78,6 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
     @Override
     public void onResume() {
         super.onResume();
-       // getContentResolver().notifyChange(TransactionProvider.CONTENT_URI,null);
     }
 }
 
