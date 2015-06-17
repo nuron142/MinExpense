@@ -101,7 +101,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 //        GROUP BY agent_code;
         Cursor c = db.rawQuery("SELECT sum(" + TRANSACTION_AMOUNT + ") FROM " + TRANSACTION_TABLE_NAME + " WHERE " +
                 TRANSACTION_INCOMEOREXPENSE + " = '0' ;", null);
-
         // Cursor c = db.rawQuery("SELECT sum("+TRANSACTION_AMOUNT+") FROM "+TRANSACTION_TABLE_NAME+ ";", null);
         if (c.moveToFirst())
             amount = c.getInt(0);
