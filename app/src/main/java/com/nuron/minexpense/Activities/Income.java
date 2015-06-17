@@ -60,7 +60,7 @@ public class Income extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState)
     {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.expense);
+        setContentView(R.layout.income);
         sqLiteDBHelper = new SQLiteDBHelper(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);

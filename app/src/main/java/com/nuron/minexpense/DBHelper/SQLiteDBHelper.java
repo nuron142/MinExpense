@@ -9,6 +9,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.os.Bundle;
 import android.util.Log;
 
 public class SQLiteDBHelper extends SQLiteOpenHelper {
@@ -91,22 +92,30 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
                 cursor.getString(cursor.getColumnIndex(TRANSACTION_INCOMEOREXPENSE)));
     }
 
-    public double getSumAll() {
-        double amount;
+    public Bundle getSumAll() {
+
+        Bundle transactionSumBundle = new Bundle();
         SQLiteDatabase db = this.getWritableDatabase();
 
-//        SELECT agent_code,
-//        SUM (advance_amount)
-//        FROM orders
-//        GROUP BY agent_code;
-        Cursor c = db.rawQuery("SELECT sum(" + TRANSACTION_AMOUNT + ") FROM " + TRANSACTION_TABLE_NAME + " WHERE " +
-                TRANSACTION_INCOMEOREXPENSE + " = '0' ;", null);
-        // Cursor c = db.rawQuery("SELECT sum("+TRANSACTION_AMOUNT+") FROM "+TRANSACTION_TABLE_NAME+ ";", null);
-        if (c.moveToFirst())
-            amount = c.getInt(0);
-        else
-            amount = 0;
-        return amount;
+        Cursor cursor = db.rawQuery("SELECT " + TRANSACTION_INCOMEOREXPENSE + ", sum(" + TRANSACTION_AMOUNT + ") FROM " + TRANSACTION_TABLE_NAME + " GROUP BY " + TRANSACTION_INCOMEOREXPENSE + " ;", null);
+
+        transactionSumBundle.putString("income_sum", "0");
+        transactionSumBundle.putString("expense_sum", "0");
+
+        while (cursor.moveToNext()) {
+            switch (cursor.getString(0)) {
+                case "0":
+                    transactionSumBundle.putString("income_sum", cursor.getString(1));
+                    break;
+                case "1":
+                    transactionSumBundle.putString("expense_sum", cursor.getString(1));
+                    break;
+            }
+        }
+
+        cursor.close();
+        db.close();
+        return transactionSumBundle;
     }
 
 }

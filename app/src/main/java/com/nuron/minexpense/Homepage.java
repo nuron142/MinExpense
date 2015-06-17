@@ -18,6 +18,11 @@ import com.nuron.minexpense.Adapters.TransactionCursorAdaptor;
 import com.nuron.minexpense.ContentProvider.TransactionProvider;
 import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 public class Homepage extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private TransactionCursorAdaptor transactionCursorAdapter;
@@ -41,7 +46,7 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
         mListView.setAdapter(transactionCursorAdapter);
         getLoaderManager().initLoader(0, null, this);
 
-        updateSum();
+        //updateSum();
 
         Button add_expense  = (Button) findViewById(R.id.add_expense);
         add_expense.setOnClickListener(new View.OnClickListener() {
@@ -85,9 +90,24 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
     }
 
     public void updateSum() {
-        double amount_sum = sqliteDBHelper.getSumAll();
-        TextView sum = (TextView) findViewById(R.id.amount_sum);
-        sum.setText(String.valueOf(amount_sum));
+
+        double income_sum = 0, expense_sum = 0, left_sum = 0;
+
+        Bundle transactionSumBundle = sqliteDBHelper.getSumAll();
+        if (transactionSumBundle != null) {
+            income_sum = Double.parseDouble(transactionSumBundle.getString("income_sum"));
+            expense_sum = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
+        }
+
+        DecimalFormat formatter = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        formatter.setRoundingMode(RoundingMode.DOWN);
+
+        TextView incomeText = (TextView) findViewById(R.id.income_sum);
+        incomeText.setText(String.format("%1$,.2f", income_sum));
+
+        TextView expenseText = (TextView) findViewById(R.id.expense_sum);
+        expenseText.setText(formatter.format(expense_sum));
+
     }
 }
 
