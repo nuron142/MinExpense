@@ -12,22 +12,23 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.nuron.minexpense.Adapters.TransactionCursorAdaptor;
+import com.nuron.minexpense.ContentProvider.TransactionProvider;
 import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
-import com.nuron.minexpense.DBHelper.TransactionProvider;
 
 public class Homepage extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
 
     private TransactionCursorAdaptor transactionCursorAdapter;
     private SQLiteDBHelper sqliteDBHelper;
-    private  ListView mListView;
+    private ListView mListView;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_homepage);
+        setContentView(R.layout.homepage);
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
 
@@ -39,6 +40,8 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
         transactionCursorAdapter = new TransactionCursorAdaptor(this, cursor);
         mListView.setAdapter(transactionCursorAdapter);
         getLoaderManager().initLoader(0, null, this);
+
+        updateSum();
 
         Button add_expense  = (Button) findViewById(R.id.add_expense);
         add_expense.setOnClickListener(new View.OnClickListener() {
@@ -68,6 +71,7 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         transactionCursorAdapter.swapCursor(data);
+        updateSum();
     }
 
     @Override
@@ -78,6 +82,12 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
     @Override
     public void onResume() {
         super.onResume();
+    }
+
+    public void updateSum() {
+        double amount_sum = sqliteDBHelper.getSumAll();
+        TextView sum = (TextView) findViewById(R.id.amount_sum);
+        sum.setText(String.valueOf(amount_sum));
     }
 }
 

@@ -1,4 +1,4 @@
-package com.nuron.minexpense.DBHelper;
+package com.nuron.minexpense.ContentProvider;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;
@@ -23,6 +23,8 @@ public class TransactionProvider extends ContentProvider {
 
     private static final int TRANSACTIONS = 1;
     private static final int TRANSACTIONS_ID = 2;
+    private static final int TRANSACTIONS_SUM_AMOUNT = 3;
+
 
     private static final UriMatcher uriMatcher ;
     static {
@@ -44,22 +46,25 @@ public class TransactionProvider extends ContentProvider {
         SQLiteDatabase db = sqliteDBHelper.getWritableDatabase();
         SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
         queryBuilder.setTables(SQLiteDBHelper.TRANSACTION_TABLE_NAME);
+        Cursor cursor;
 
         switch (uriMatcher.match(uri)) {
             case TRANSACTIONS:
-                //do nothing
+                cursor = queryBuilder.query(db, projection, selection,
+                        selectionArgs, null, null, sortOrder);
+                cursor.setNotificationUri(getContext().getContentResolver(), uri);
                 break;
-            case TRANSACTIONS_ID:
-                String id = uri.getPathSegments().get(1);
-                queryBuilder.appendWhere(SQLiteDBHelper.TRANSACTION_ID + "=" + id);
-                break;
+//            case TRANSACTIONS_ID:
+//                String id = uri.getPathSegments().get(1);
+//                queryBuilder.appendWhere(SQLiteDBHelper.TRANSACTION_ID + "=" + id);
+//                break;
+            case TRANSACTIONS_SUM_AMOUNT:
+                cursor = db.rawQuery("SELECT sum(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") FROM " + SQLiteDBHelper.TRANSACTION_TABLE_NAME + " WHERE " +
+                        SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE + " = '0' ;", null);
+                cursor.setNotificationUri(getContext().getContentResolver(), uri);
             default:
                 throw new IllegalArgumentException("Unsupported URI: " + uri);
         }
-
-        Cursor cursor = queryBuilder.query(db, projection, selection,
-                selectionArgs, null, null, sortOrder);
-        cursor.setNotificationUri(getContext().getContentResolver(), uri);
         return cursor;
     }
 
@@ -148,5 +153,26 @@ public class TransactionProvider extends ContentProvider {
         getContext().getContentResolver().notifyChange(uri, null);
         return updateCount;
     }
+
+//    public Bundle call(String method, String arg, Bundle extras) {
+//        if(method.equals("getSumAll")) {
+//            // Do whatever it is you need to do
+//        }
+//        return null;
+//    }
+
+//    public double getSumAll()
+//    {
+//        double amount;
+//        SQLiteDatabase db = sqliteDBHelper.getWritableDatabase();
+//        Cursor c = db.rawQuery("SELECT sum("+TRANSACTION_AMOUNT+") FROM "+TRANSACTION_TABLE_NAME+ " WHERE "+
+//                TRANSACTION_INCOMEOREXPENSE+" = '0' ;", null);
+//        if(c.moveToFirst())
+//            amount = c.getInt(0);
+//        else
+//            amount = 0;
+//        return amount;
+//    }
+
 }
 

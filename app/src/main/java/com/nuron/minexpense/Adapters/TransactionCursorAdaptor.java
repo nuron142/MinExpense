@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,10 +14,10 @@ import android.widget.TextView;
 
 import com.daimajia.swipe.SwipeLayout;
 import com.daimajia.swipe.adapters.CursorSwipeAdapter;
-import com.nuron.minexpense.R;
+import com.nuron.minexpense.ContentProvider.TransactionProvider;
 import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
 import com.nuron.minexpense.DBHelper.Transaction;
-import com.nuron.minexpense.DBHelper.TransactionProvider;
+import com.nuron.minexpense.R;
 import com.nuron.minexpense.Utilities.Utilities;
 
 /**

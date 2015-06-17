@@ -91,6 +91,25 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
                 cursor.getString(cursor.getColumnIndex(TRANSACTION_INCOMEOREXPENSE)));
     }
 
+    public double getSumAll() {
+        double amount;
+        SQLiteDatabase db = this.getWritableDatabase();
+
+//        SELECT agent_code,
+//        SUM (advance_amount)
+//        FROM orders
+//        GROUP BY agent_code;
+        Cursor c = db.rawQuery("SELECT sum(" + TRANSACTION_AMOUNT + ") FROM " + TRANSACTION_TABLE_NAME + " WHERE " +
+                TRANSACTION_INCOMEOREXPENSE + " = '0' ;", null);
+
+        // Cursor c = db.rawQuery("SELECT sum("+TRANSACTION_AMOUNT+") FROM "+TRANSACTION_TABLE_NAME+ ";", null);
+        if (c.moveToFirst())
+            amount = c.getInt(0);
+        else
+            amount = 0;
+        return amount;
+    }
+
 }
 
 
