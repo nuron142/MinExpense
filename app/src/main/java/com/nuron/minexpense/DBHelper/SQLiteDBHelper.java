@@ -117,7 +117,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
         db.close();
         return transactionSumBundle;
     }
-
 }
 
 

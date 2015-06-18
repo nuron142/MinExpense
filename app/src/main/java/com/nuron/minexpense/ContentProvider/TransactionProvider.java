@@ -5,7 +5,6 @@ import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.database.sqlite.SQLiteQueryBuilder;
 import android.net.Uri;
 import android.text.TextUtils;
 
@@ -23,8 +22,6 @@ public class TransactionProvider extends ContentProvider {
 
     private static final int TRANSACTIONS = 1;
     private static final int TRANSACTIONS_ID = 2;
-    private static final int TRANSACTIONS_SUM_AMOUNT = 3;
-
 
     private static final UriMatcher uriMatcher ;
     static {
@@ -43,29 +40,21 @@ public class TransactionProvider extends ContentProvider {
 
     @Override
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
-        SQLiteDatabase db = sqliteDBHelper.getWritableDatabase();
-        SQLiteQueryBuilder queryBuilder = new SQLiteQueryBuilder();
-        queryBuilder.setTables(SQLiteDBHelper.TRANSACTION_TABLE_NAME);
-        Cursor cursor;
+        SQLiteDatabase db = sqliteDBHelper.getReadableDatabase();
 
+        Cursor c = null;
         switch (uriMatcher.match(uri)) {
             case TRANSACTIONS:
-                cursor = queryBuilder.query(db, projection, selection,
-                        selectionArgs, null, null, sortOrder);
-                cursor.setNotificationUri(getContext().getContentResolver(), uri);
+                c = db.query(SQLiteDBHelper.TRANSACTION_TABLE_NAME, projection, selection, selectionArgs, null, null, sortOrder);
+                c.setNotificationUri(getContext().getContentResolver(), uri);
+                return c;
+            case TRANSACTIONS_ID:
                 break;
-//            case TRANSACTIONS_ID:
-//                String id = uri.getPathSegments().get(1);
-//                queryBuilder.appendWhere(SQLiteDBHelper.TRANSACTION_ID + "=" + id);
-//                break;
-            case TRANSACTIONS_SUM_AMOUNT:
-                cursor = db.rawQuery("SELECT sum(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") FROM " + SQLiteDBHelper.TRANSACTION_TABLE_NAME + " WHERE " +
-                        SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE + " = '0' ;", null);
-                cursor.setNotificationUri(getContext().getContentResolver(), uri);
             default:
-                throw new IllegalArgumentException("Unsupported URI: " + uri);
+                throw new IllegalArgumentException("Invalid URI: " + uri);
         }
-        return cursor;
+        return c;
+
     }
 
 
@@ -134,16 +123,9 @@ public class TransactionProvider extends ContentProvider {
 
         switch (uriMatcher.match(uri)) {
             case TRANSACTIONS:
-                //do nothing
                 break;
             case TRANSACTIONS_ID:
-
                 String id = uri.getLastPathSegment();
-//                String where = sqliteDBHelper.TRANSACTION_ID + " = " + uri.getLastPathSegment();
-//                if (TextUtils.isEmpty(selection)) {
-//                    where += " AND "+ selection;
-//                }
-
                 updateCount = db.update(SQLiteDBHelper.TRANSACTION_TABLE_NAME,contentValues, SQLiteDBHelper.TRANSACTION_ID + "=" + id,selectionArgs);
                 break;
             default:
@@ -153,26 +135,6 @@ public class TransactionProvider extends ContentProvider {
         getContext().getContentResolver().notifyChange(uri, null);
         return updateCount;
     }
-
-//    public Bundle call(String method, String arg, Bundle extras) {
-//        if(method.equals("getSumAll")) {
-//            // Do whatever it is you need to do
-//        }
-//        return null;
-//    }
-
-//    public double getSumAll()
-//    {
-//        double amount;
-//        SQLiteDatabase db = sqliteDBHelper.getWritableDatabase();
-//        Cursor c = db.rawQuery("SELECT sum("+TRANSACTION_AMOUNT+") FROM "+TRANSACTION_TABLE_NAME+ " WHERE "+
-//                TRANSACTION_INCOMEOREXPENSE+" = '0' ;", null);
-//        if(c.moveToFirst())
-//            amount = c.getInt(0);
-//        else
-//            amount = 0;
-//        return amount;
-//    }
 
 }
 

@@ -2,6 +2,7 @@ package com.nuron.minexpense.Utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
 /**
  * Created by sunil on 10-Jun-15.
@@ -28,6 +29,10 @@ public class Utilities {
         SimpleDateFormat editText = new SimpleDateFormat("EEEE, dd MMM yyyy");
         SimpleDateFormat listText = new SimpleDateFormat("EEEE, MMM dd");
 
+        if (date.equals("")) {
+            Date today = new Date();
+            date = editText.format(today);
+        }
         try {
             switch (option)
             {
@@ -52,5 +57,6 @@ public class Utilities {
         }
         return formatedDate;
     }
+
 
 }

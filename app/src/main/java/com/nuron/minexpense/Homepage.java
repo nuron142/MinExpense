@@ -19,8 +19,11 @@ import com.nuron.minexpense.ContentProvider.TransactionProvider;
 import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
 
 import java.math.RoundingMode;
+import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 public class Homepage extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
@@ -40,13 +43,14 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
         mListView = (ListView) findViewById(R.id.list);
 
         sqliteDBHelper = new SQLiteDBHelper(this);
-        Cursor cursor = getContentResolver().query(TransactionProvider.CONTENT_URI, null, null, null, null);
 
-        transactionCursorAdapter = new TransactionCursorAdaptor(this, cursor);
-        mListView.setAdapter(transactionCursorAdapter);
+//        Cursor cursor = getContentResolver().query(TransactionProvider.CONTENT_URI, null,
+//                SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? ", new String[] { today_start, today_end }, null);
+
         getLoaderManager().initLoader(0, null, this);
+        transactionCursorAdapter = new TransactionCursorAdaptor(this, null);
+        mListView.setAdapter(transactionCursorAdapter);
 
-        //updateSum();
 
         Button add_expense  = (Button) findViewById(R.id.add_expense);
         add_expense.setOnClickListener(new View.OnClickListener() {
@@ -69,7 +73,17 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        Date date = new Date();
+        String today_start = dateFormat.format(date) + " 00:00:00";
+        String today_end = dateFormat.format(date) + " 23:59:59";
+
+        String selection = SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? ";
+        String[] selectionArgs = new String[]{today_start, today_end};
+
         Uri uri = TransactionProvider.CONTENT_URI;
+        //return new CursorLoader(this, uri, null, selection, selectionArgs, null);
         return new CursorLoader(this, uri, null, null, null, null);
     }
 
@@ -99,11 +113,11 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
             expense_sum = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
         }
 
-        DecimalFormat formatter = new DecimalFormat("#.##", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-        formatter.setRoundingMode(RoundingMode.DOWN);
+        DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        formatter.setRoundingMode(RoundingMode.HALF_UP);
 
         TextView incomeText = (TextView) findViewById(R.id.income_sum);
-        incomeText.setText(String.format("%1$,.2f", income_sum));
+        incomeText.setText(formatter.format(income_sum));
 
         TextView expenseText = (TextView) findViewById(R.id.expense_sum);
         expenseText.setText(formatter.format(expense_sum));
