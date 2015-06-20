@@ -5,9 +5,6 @@
     android:layout_height="match_parent"
     android:orientation="vertical">
 
-    <!--<include-->
-    <!--android:id="@+id/tool_bar"-->
-    <!--layout="@layout/tool_bar"/>-->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
@@ -21,11 +18,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+            <include
                 android:id="@+id/tool_bar"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:theme="@style/ThemeOverlay.AppCompat.Dark" />
+                layout="@layout/tool_bar" />
 
             <LinearLayout
                 android:layout_width="match_parent"
