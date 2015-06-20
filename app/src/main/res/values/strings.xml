@@ -4,6 +4,7 @@
     <string name="app_name">MinExpense</string>
     <string name="add_expense_page">Add Expense</string>
     <string name="add_income_page">Add Income</string>
+    <string name="transactions_page">Transactions</string>
     <string name="action_settings">Settings</string>
 
     <string name="closeDrawer">Navigation View</string>

@@ -18,16 +18,17 @@ import com.nuron.minexpense.R;
 public class BaseActivity extends AppCompatActivity {
 
 
+    Intent intent;
     private Toolbar toolbar;
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
-
 
     protected void onCreateNavigationView() {
 
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
 
         navigationView = (NavigationView) findViewById(R.id.navigation_view);
         navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
@@ -35,21 +36,21 @@ public class BaseActivity extends AppCompatActivity {
             @Override
             public boolean onNavigationItemSelected(MenuItem menuItem) {
 
-                if (menuItem.isChecked())
-                    menuItem.setChecked(false);
-                else
-                    menuItem.setChecked(true);
-
                 drawerLayout.closeDrawers();
                 switch (menuItem.getItemId()) {
                     case R.id.navigation_item_1:
-                        Intent expense = new Intent("com.nuron.minexpense.ADD_EXPENSE");
-                        startActivity(expense);
+                        intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
+                        startActivity(intent);
                         return true;
 
                     case R.id.navigation_item_2:
-                        Intent income = new Intent("com.nuron.minexpense.ADD_INCOME");
-                        startActivity(income);
+                        intent = new Intent("com.nuron.minexpense.ADD_INCOME");
+                        startActivity(intent);
+                        return true;
+
+                    case R.id.navigation_item_3:
+                        intent = new Intent("com.nuron.minexpense.TRANSACTIONS");
+                        startActivity(intent);
                         return true;
 
                     default:

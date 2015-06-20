@@ -2,11 +2,15 @@
     <group android:checkableBehavior="single">
         <item
             android:id="@+id/navigation_item_1"
-            android:checked="true"
+            android:checked="false"
             android:title="Expense" />
         <item
             android:id="@+id/navigation_item_2"
             android:checked="false"
             android:title="Income" />
+        <item
+            android:id="@+id/navigation_item_3"
+            android:checked="false"
+            android:title="Transactions" />
     </group>
 </menu>

@@ -66,7 +66,9 @@ public class Expense extends AppCompatActivity{
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         toolbar.setNavigationIcon(R.drawable.ic_up);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -152,7 +154,7 @@ public class Expense extends AppCompatActivity{
         date.show(getSupportFragmentManager(), "Date Picker");
     }
 
-    private List<Integer> addImageId(){
+    private List<Integer> addImageId() {
         List<Integer> artImageId;
         artImageId = new ArrayList<>();
         artImageId.add(R.drawable.star);

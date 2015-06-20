@@ -66,7 +66,9 @@ public class Income extends AppCompatActivity{
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
         toolbar.setNavigationIcon(R.drawable.ic_up);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override

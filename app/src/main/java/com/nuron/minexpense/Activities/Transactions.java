@@ -1,21 +1,20 @@
-package com.nuron.minexpense;
+package com.nuron.minexpense.Activities;
 
 import android.app.LoaderManager;
 import android.content.CursorLoader;
-import android.content.Intent;
 import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.nuron.minexpense.Activities.BaseActivity;
 import com.nuron.minexpense.Adapters.TransactionCursorAdaptor;
 import com.nuron.minexpense.ContentProvider.TransactionProvider;
 import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
+import com.nuron.minexpense.R;
 
 import java.math.RoundingMode;
 import java.text.DateFormat;
@@ -25,7 +24,10 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class Homepage extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+/**
+ * Created by sunil on 20-Jun-15.
+ */
+public class Transactions extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private TransactionCursorAdaptor transactionCursorAdapter;
     private SQLiteDBHelper sqliteDBHelper;
@@ -34,8 +36,20 @@ public class Homepage extends BaseActivity implements LoaderManager.LoaderCallba
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.homepage);
-        super.onCreateNavigationView();
+        setContentView(R.layout.transactions);
+
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null)
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+
+        toolbar.setNavigationIcon(R.drawable.ic_up);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         mListView = (ListView) findViewById(R.id.list);
         sqliteDBHelper = new SQLiteDBHelper(this);
@@ -43,25 +57,6 @@ public class Homepage extends BaseActivity implements LoaderManager.LoaderCallba
         getLoaderManager().initLoader(0, null, this);
         transactionCursorAdapter = new TransactionCursorAdaptor(this, null);
         mListView.setAdapter(transactionCursorAdapter);
-
-
-        Button add_expense  = (Button) findViewById(R.id.add_expense);
-        add_expense.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
-                startActivity(intent);
-            }
-        });
-
-        Button add_income  = (Button) findViewById(R.id.add_income);
-        add_income.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent("com.nuron.minexpense.ADD_INCOME");
-                startActivity(intent);
-            }
-        });
     }
 
     @Override
@@ -76,8 +71,8 @@ public class Homepage extends BaseActivity implements LoaderManager.LoaderCallba
         String[] selectionArgs = new String[]{today_start, today_end};
 
         Uri uri = TransactionProvider.CONTENT_URI;
-        return new CursorLoader(this, uri, null, selection, selectionArgs, null);
-        //return new CursorLoader(this, uri, null, null, null, null);
+        //return new CursorLoader(this, uri, null, selection, selectionArgs, null);
+        return new CursorLoader(this, uri, null, null, null, null);
     }
 
     @Override
@@ -117,4 +112,3 @@ public class Homepage extends BaseActivity implements LoaderManager.LoaderCallba
 
     }
 }
-
