@@ -61,10 +61,19 @@ public class Income extends AppCompatActivity{
     {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.income);
+
         sqLiteDBHelper = new SQLiteDBHelper(this);
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbar.setNavigationIcon(R.drawable.ic_up);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                finish();
+            }
+        });
 
         RecyclerView rv = (RecyclerView)findViewById(R.id.image_list);
         rv.setHasFixedSize(true);

@@ -7,13 +7,12 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.nuron.minexpense.Activities.BaseActivity;
 import com.nuron.minexpense.Adapters.TransactionCursorAdaptor;
 import com.nuron.minexpense.ContentProvider.TransactionProvider;
 import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
@@ -26,26 +25,27 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class Homepage extends AppCompatActivity implements LoaderManager.LoaderCallbacks<Cursor>{
+public class Homepage extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private TransactionCursorAdaptor transactionCursorAdapter;
     private SQLiteDBHelper sqliteDBHelper;
     private ListView mListView;
+
+//    private Toolbar toolbar;
+//    private NavigationView navigationView;
+//    private DrawerLayout drawerLayout;
 
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
-        setSupportActionBar(toolbar);
+        super.onCreateNavigationView();
+
+        //createNavigationView();
 
         mListView = (ListView) findViewById(R.id.list);
-
         sqliteDBHelper = new SQLiteDBHelper(this);
-
-//        Cursor cursor = getContentResolver().query(TransactionProvider.CONTENT_URI, null,
-//                SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? ", new String[] { today_start, today_end }, null);
 
         getLoaderManager().initLoader(0, null, this);
         transactionCursorAdapter = new TransactionCursorAdaptor(this, null);
@@ -56,8 +56,8 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
         add_expense.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-               Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
-               startActivity(intent);
+                Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
+                startActivity(intent);
             }
         });
 
@@ -90,7 +90,7 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
         transactionCursorAdapter.swapCursor(data);
-        updateSum();
+        //updateSum();
     }
 
     @Override
@@ -123,5 +123,59 @@ public class Homepage extends AppCompatActivity implements LoaderManager.LoaderC
         expenseText.setText(formatter.format(expense_sum));
 
     }
+
+//    public void createNavigationView()
+//    {
+//        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+//        setSupportActionBar(toolbar);
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//
+//        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+//        navigationView.setNavigationItemSelectedListener(new NavigationView.OnNavigationItemSelectedListener() {
+//
+//            @Override
+//            public boolean onNavigationItemSelected(MenuItem menuItem) {
+//
+//                if(menuItem.isChecked())
+//                    menuItem.setChecked(false);
+//                else
+//                    menuItem.setChecked(true);
+//
+//                drawerLayout.closeDrawers();
+//                switch (menuItem.getItemId())
+//                {
+//                    case R.id.navigation_item_1:
+//                        Intent expense = new Intent("com.nuron.minexpense.ADD_EXPENSE");
+//                        startActivity(expense);
+//                        return true;
+//
+//                    case R.id.navigation_item_2:
+//                        Intent income = new Intent("com.nuron.minexpense.ADD_INCOME");
+//                        startActivity(income);
+//                        return true;
+//
+//                    default:
+//                        return true;
+//                }
+//            }
+//        });
+//
+//        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+//        ActionBarDrawerToggle actionBarDrawerToggle = new ActionBarDrawerToggle(this,drawerLayout,toolbar,R.string.openDrawer, R.string.closeDrawer){
+//
+//            @Override
+//            public void onDrawerClosed(View drawerView) {
+//                super.onDrawerClosed(drawerView);
+//            }
+//
+//            @Override
+//            public void onDrawerOpened(View drawerView) {
+//                super.onDrawerOpened(drawerView);
+//            }
+//        };
+//
+//        drawerLayout.setDrawerListener(actionBarDrawerToggle);
+//        actionBarDrawerToggle.syncState();
+//    }
 }
 
