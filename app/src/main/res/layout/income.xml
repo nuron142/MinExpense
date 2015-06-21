@@ -145,7 +145,6 @@
 
     </LinearLayout>
 
-
     <android.support.v7.widget.RecyclerView
         android:id="@+id/image_list"
         android:layout_width="match_parent"
@@ -155,15 +154,21 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.4" />
+        android:layout_weight="0.3" />
 
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="0.04"
+        android:background="#F3716E" />
 
     <Button
         android:id="@+id/save"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
-        android:background="@android:color/holo_blue_bright"
+        android:background="#121316"
         android:padding="0dp"
-        android:text="SAVE"/>
+        android:text="SAVE"
+        android:textColor="@android:color/white" />
 </LinearLayout>

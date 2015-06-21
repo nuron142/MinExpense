@@ -10,6 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nuron.minexpense.Activities.BaseActivity;
@@ -25,7 +26,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-public class Homepage extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
+public class Homepage extends BaseActivity implements
+        LoaderManager.LoaderCallbacks<Cursor> {
 
     private TransactionCursorAdaptor transactionCursorAdapter;
     private SQLiteDBHelper sqliteDBHelper;
@@ -62,6 +64,7 @@ public class Homepage extends BaseActivity implements LoaderManager.LoaderCallba
                 startActivity(intent);
             }
         });
+
     }
 
     @Override
@@ -115,6 +118,16 @@ public class Homepage extends BaseActivity implements LoaderManager.LoaderCallba
         TextView expenseText = (TextView) findViewById(R.id.expense_sum);
         expenseText.setText(formatter.format(expense_sum));
 
+        ProgressBar pb = (ProgressBar) findViewById(R.id.progressBarLevel);
+        left_sum = (100 * (income_sum - expense_sum)) / income_sum;
+        if (left_sum <= 0)
+            pb.setProgress(100);
+        else if (left_sum >= 100)
+            pb.setProgress(1);
+        else
+            pb.setProgress((int) left_sum);
+
     }
+
 }
 
