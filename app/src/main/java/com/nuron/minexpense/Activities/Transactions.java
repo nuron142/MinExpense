@@ -6,9 +6,11 @@ import android.content.Loader;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.nuron.minexpense.Adapters.TransactionCursorAdaptor;
@@ -17,11 +19,8 @@ import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
 import com.nuron.minexpense.R;
 
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -30,13 +29,16 @@ import java.util.Locale;
 public class Transactions extends BaseActivity implements LoaderManager.LoaderCallbacks<Cursor> {
 
     private TransactionCursorAdaptor transactionCursorAdapter;
-    private SQLiteDBHelper sqliteDBHelper;
     private ListView mListView;
+    private Handler handler;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.transactions);
+
+        handler = new Handler();
 
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
@@ -52,38 +54,54 @@ public class Transactions extends BaseActivity implements LoaderManager.LoaderCa
         });
 
         mListView = (ListView) findViewById(R.id.list);
-        sqliteDBHelper = new SQLiteDBHelper(this);
 
         getLoaderManager().initLoader(0, null, this);
+        getLoaderManager().initLoader(1, null, this);
+
         transactionCursorAdapter = new TransactionCursorAdaptor(this, null);
         mListView.setAdapter(transactionCursorAdapter);
     }
 
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+        if (id == 0) {
+            Uri uri = TransactionProvider.CONTENT_URI;
+            return new CursorLoader(this, uri, null, null, null, null);
+        } else {
+            String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
+                    "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
+            String selection = " 0 == 0 GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
 
-        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        Date date = new Date();
-        String today_start = dateFormat.format(date) + " 00:00:00";
-        String today_end = dateFormat.format(date) + " 23:59:59";
-
-        String selection = SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? ";
-        String[] selectionArgs = new String[]{today_start, today_end};
-
-        Uri uri = TransactionProvider.CONTENT_URI;
-        //return new CursorLoader(this, uri, null, selection, selectionArgs, null);
-        return new CursorLoader(this, uri, null, null, null, null);
+            Uri uri = TransactionProvider.CONTENT_URI;
+            return new CursorLoader(this, uri, projection, selection, null, null);
+        }
     }
 
     @Override
-    public void onLoadFinished(Loader<Cursor> loader, Cursor data) {
-        transactionCursorAdapter.swapCursor(data);
-        updateSum();
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+        if (loader.getId() == 0) {
+            transactionCursorAdapter.swapCursor(cursor);
+        } else {
+            final Cursor cursor1 = cursor;
+            handler.post(new Runnable() {
+                public void run() {
+                    updateSum(cursor1);
+                }
+            });
+        }
     }
 
     @Override
     public void onLoaderReset(Loader<Cursor> loader) {
-        transactionCursorAdapter.swapCursor(null);
+        if (loader.getId() == 0)
+            transactionCursorAdapter.swapCursor(null);
+        else {
+            TextView incomeText = (TextView) findViewById(R.id.income_sum);
+            incomeText.setText("0");
+
+            TextView expenseText = (TextView) findViewById(R.id.expense_sum);
+            expenseText.setText("0");
+        }
     }
 
     @Override
@@ -91,11 +109,24 @@ public class Transactions extends BaseActivity implements LoaderManager.LoaderCa
         super.onResume();
     }
 
-    public void updateSum() {
-
+    public void updateSum(Cursor cursor) {
         double income_sum = 0, expense_sum = 0, left_sum = 0;
+        Bundle transactionSumBundle = new Bundle();
 
-        Bundle transactionSumBundle = sqliteDBHelper.getSumAll();
+        transactionSumBundle.putString("income_sum", "0");
+        transactionSumBundle.putString("expense_sum", "0");
+
+        while (cursor.moveToNext()) {
+            switch (cursor.getString(0)) {
+                case "0":
+                    transactionSumBundle.putString("income_sum", cursor.getString(1));
+                    break;
+                case "1":
+                    transactionSumBundle.putString("expense_sum", cursor.getString(1));
+                    break;
+            }
+        }
+
         if (transactionSumBundle != null) {
             income_sum = Double.parseDouble(transactionSumBundle.getString("income_sum"));
             expense_sum = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
@@ -109,6 +140,15 @@ public class Transactions extends BaseActivity implements LoaderManager.LoaderCa
 
         TextView expenseText = (TextView) findViewById(R.id.expense_sum);
         expenseText.setText(formatter.format(expense_sum));
+
+        ProgressBar pb = (ProgressBar) findViewById(R.id.progressBarLevel);
+        left_sum = (100 * (income_sum - expense_sum)) / income_sum;
+        if (left_sum <= 0)
+            pb.setProgress(100);
+        else if (left_sum >= 100)
+            pb.setProgress(1);
+        else
+            pb.setProgress((int) left_sum);
 
     }
 }

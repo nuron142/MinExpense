@@ -25,6 +25,7 @@ public class BaseActivity extends AppCompatActivity {
 
     protected void onCreateNavigationView() {
 
+
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
         setSupportActionBar(toolbar);
         if (getSupportActionBar() != null)

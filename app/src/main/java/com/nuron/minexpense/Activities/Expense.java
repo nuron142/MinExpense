@@ -92,7 +92,8 @@ public class Expense extends AppCompatActivity{
         utilities=new Utilities();
 
         final EditText name = (EditText) findViewById(R.id.add_name);
-        final EditText amount = (EditText) findViewById(R.id.add_amount);
+        //final EditText amount = (EditText) findViewById(R.id.add_amount);
+        final EditText amount = (EditText) findViewById(R.id.add_amount_material);
         final EditText category = (EditText) findViewById(R.id.add_category);
         final EditText date = (EditText) findViewById(R.id.add_date);
 
