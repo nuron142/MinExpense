@@ -1,7 +1,5 @@
 package com.nuron.minexpense.Fragments;
 
-
-import android.app.Activity;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,7 +11,6 @@ import android.support.v4.content.Loader;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -22,63 +19,46 @@ import com.nuron.minexpense.Adapters.TransactionCursorAdaptor;
 import com.nuron.minexpense.ContentProvider.TransactionProvider;
 import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
 import com.nuron.minexpense.R;
-import com.nuron.minexpense.Utilities.Utilities;
 
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 /**
- * Created by sunil on 24-Jun-15.
+ * Created by sunil on 28-Jun-15.
  */
-public class HomePageFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
+public class TransactionFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     double income_sum_final = 0, expense_sum_final = 0, left_sum_final = 0;
-    AddExpenseClickListener mListener;
     private TransactionCursorAdaptor transactionCursorAdapter;
     private ListView mListView;
     private Handler handler;
+//    AddExpenseClickListener mListener;
+//
+//
+//    public interface AddExpenseClickListener {
+//        public void AddExpenseClick(Bundle transaction);
+//    }
+//
+//    @Override
+//    public void onAttach(Activity activity) {
+//        super.onAttach(activity);
+//        try {
+//            mListener = (AddExpenseClickListener) activity;
+//        } catch (ClassCastException e) {
+//            throw new ClassCastException(activity.toString() + " must implement AddExpenseClickListener");
+//        }
+//    }
 
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (AddExpenseClickListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString() + " must implement AddExpenseClickListener");
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.homepage_fragment, container, false);
+        final View rootView = inflater.inflate(R.layout.transactions_fragment, container, false);
 
         handler = new Handler();
 
-        Button add_expense = (Button) rootView.findViewById(R.id.add_expense);
-        add_expense.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mListener.AddExpenseClick(Utilities.TYPE_EXPENSE);
-//                Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
-//                startActivity(intent);
-            }
-        });
-
-        Button add_income = (Button) rootView.findViewById(R.id.add_income);
-        add_income.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                Intent intent = new Intent("com.nuron.minexpense.ADD_INCOME");
-//                startActivity(intent);
-                mListener.AddExpenseClick(Utilities.TYPE_INCOME);
-            }
-        });
         return rootView;
     }
 
@@ -96,35 +76,18 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == 0) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = new Date();
-            String today_start = dateFormat.format(date) + " 00:00:00";
-            String today_end = dateFormat.format(date) + " 23:59:59";
-
-            String selection = SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? ";
-
-            String[] selectionArgs = new String[]{today_start, today_end};
-
             Uri uri = TransactionProvider.CONTENT_URI;
-            return new CursorLoader(getActivity(), uri, null, selection, selectionArgs, null);
+            return new CursorLoader(getActivity(), uri, null, null, null, null);
         } else {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = new Date();
-            String today_start = dateFormat.format(date) + " 00:00:00";
-            String today_end = dateFormat.format(date) + " 23:59:59";
-
             String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
                     "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
-            String selection =
-                    SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? "
-                            + " GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
-
-            String[] selectionArgs = new String[]{today_start, today_end};
+            String selection = " 0 == 0 GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
 
             Uri uri = TransactionProvider.CONTENT_URI;
-            return new CursorLoader(getActivity(), uri, projection, selection, selectionArgs, null);
+            return new CursorLoader(getActivity(), uri, projection, selection, null, null);
         }
     }
+
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -149,8 +112,6 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onResume() {
         super.onResume();
-        getLoaderManager().restartLoader(0, null, this);
-        getLoaderManager().restartLoader(1, null, this);
     }
 
     public void updateSum(Cursor cursor) {
@@ -171,10 +132,9 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
             }
         }
 
-        if (transactionSumBundle != null) {
-            income_sum_final = Double.parseDouble(transactionSumBundle.getString("income_sum"));
-            expense_sum_final = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
-        }
+        income_sum_final = Double.parseDouble(transactionSumBundle.getString("income_sum"));
+        expense_sum_final = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
+
 
         DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         formatter.setRoundingMode(RoundingMode.HALF_UP);
@@ -195,10 +155,6 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         else
             pb.setProgress((int) left_sum_final);
 
-    }
-
-    public interface AddExpenseClickListener {
-        void AddExpenseClick(int fragmentID);
     }
 }
 

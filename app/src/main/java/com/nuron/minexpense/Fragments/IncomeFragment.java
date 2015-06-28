@@ -28,13 +28,13 @@ import java.util.Calendar;
 import java.util.List;
 
 /**
- * Created by sunil on 24-Jun-15.
+ * Created by sunil on 28-Jun-15.
  */
-public class ExpenseFragment extends Fragment {
+public class IncomeFragment extends Fragment {
     boolean update = false;
     Uri uri;
     Utilities utilities;
-    saveExpenseListener mListener;
+    saveIncomeListener mListener;
 
     DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener() {
         @Override
@@ -62,7 +62,7 @@ public class ExpenseFragment extends Fragment {
     public void onAttach(Activity activity) {
         super.onAttach(activity);
         try {
-            mListener = (saveExpenseListener) activity;
+            mListener = (saveIncomeListener) activity;
         } catch (ClassCastException e) {
             throw new ClassCastException(activity.toString() + " must implement saveExpenseListener");
         }
@@ -97,6 +97,7 @@ public class ExpenseFragment extends Fragment {
         final EditText category = (EditText) rootView.findViewById(R.id.add_category);
         final EditText date = (EditText) rootView.findViewById(R.id.add_date);
 
+
         Bundle transactionBundle = getArguments();
         if (transactionBundle != null) {
             update = true;
@@ -120,7 +121,7 @@ public class ExpenseFragment extends Fragment {
                         category.getText().toString(),
                         Integer.toString(recyclerAdapter.getSelectedItem()),
                         utilities.getDateFormat(date.getText().toString(), Utilities.FROM_EDIT_TEXT_TO_DB),
-                        Integer.toString(Utilities.TYPE_EXPENSE));
+                        Integer.toString(Utilities.TYPE_INCOME));
 
                 ContentValues contentValues = sqLiteDBHelper.createRowContent(transaction);
                 if (update)
@@ -128,7 +129,7 @@ public class ExpenseFragment extends Fragment {
                 else
                     getActivity().getContentResolver().insert(TransactionProvider.CONTENT_URI, contentValues);
 
-                mListener.saveExpense();
+                mListener.saveIncome();
             }
         });
 
@@ -158,20 +159,17 @@ public class ExpenseFragment extends Fragment {
     private List<Integer> addImageId() {
         List<Integer> artImageId;
         artImageId = new ArrayList<>();
-
-        artImageId.add(R.drawable.batman);
         artImageId.add(R.drawable.star);
-        artImageId.add(R.drawable.batman);
+        artImageId.add(R.drawable.star);
         artImageId.add(R.drawable.trash);
         artImageId.add(R.drawable.star);
-        artImageId.add(R.drawable.batman);
+        artImageId.add(R.drawable.star);
         artImageId.add(R.drawable.trash);
-
         return artImageId;
     }
 
-    public interface saveExpenseListener {
-        void saveExpense();
+    public interface saveIncomeListener {
+        void saveIncome();
     }
 }
 

@@ -12,8 +12,7 @@
 
         <include
             android:id="@+id/tool_bar"
-            layout="@layout/tool_bar"
-            android:elevation="4dp" />
+            layout="@layout/tool_bar_no_elevation" />
 
         <FrameLayout
             android:id="@+id/fragment_container"

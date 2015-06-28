@@ -1,10 +1,11 @@
 package com.nuron.minexpense.Adapters;
 
 import android.content.Context;
-import android.content.Intent;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentTransaction;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +18,9 @@ import com.daimajia.swipe.adapters.CursorSwipeAdapter;
 import com.nuron.minexpense.ContentProvider.TransactionProvider;
 import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
 import com.nuron.minexpense.DBHelper.Transaction;
+import com.nuron.minexpense.Fragments.ExpenseFragment;
+import com.nuron.minexpense.Fragments.IncomeFragment;
+import com.nuron.minexpense.Homepage;
 import com.nuron.minexpense.R;
 import com.nuron.minexpense.Utilities.Utilities;
 
@@ -129,7 +133,7 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
             public void onClick(View v) {
 
                 if (incomeOrExpense.equals("0")) {
-                    Intent intent = new Intent("com.nuron.minexpense.ADD_INCOME");
+                    //Intent intent = new Intent("com.nuron.minexpense.ADD_INCOME");
 
                     Bundle transactionBundle = new Bundle();
                     transactionBundle.putString("position", position);
@@ -140,11 +144,27 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
                     transactionBundle.putString("date", transaction.getTime());
                     transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
 
-                    intent.putExtras(transactionBundle);
-                    v.getContext().startActivity(intent);
+//                    intent.putExtras(transactionBundle);
+//                    v.getContext().startActivity(intent);
+
+                    IncomeFragment incomeFragment = new IncomeFragment();
+                    incomeFragment.setArguments(transactionBundle);
+
+                    FragmentTransaction fragmentTransaction =
+                            ((FragmentActivity) v.getContext())
+                                    .getSupportFragmentManager()
+                                    .beginTransaction();
+
+                    fragmentTransaction.replace(R.id.fragment_container, incomeFragment);
+                    fragmentTransaction.addToBackStack(null);
+
+                    fragmentTransaction.commit();
+
+                    ((Homepage) v.getContext()).setToolbar("EDIT INCOME");
+
 
                 } else {
-                    Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
+                    //Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
 
                     Bundle transactionBundle = new Bundle();
                     transactionBundle.putString("position", position);
@@ -155,9 +175,23 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
                     transactionBundle.putString("date", transaction.getTime());
                     transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
 
-                    intent.putExtras(transactionBundle);
-                    v.getContext().startActivity(intent);
+//                    intent.putExtras(transactionBundle);
+//                    v.getContext().startActivity(intent);
 
+                    ExpenseFragment expenseFragment = new ExpenseFragment();
+                    expenseFragment.setArguments(transactionBundle);
+
+                    FragmentTransaction fragmentTransaction =
+                            ((FragmentActivity) v.getContext())
+                                    .getSupportFragmentManager()
+                                    .beginTransaction();
+
+                    fragmentTransaction.replace(R.id.fragment_container, expenseFragment);
+                    fragmentTransaction.addToBackStack(null);
+
+                    fragmentTransaction.commit();
+
+                    ((Homepage) v.getContext()).setToolbar("EDIT EXPENSE");
                 }
                 swipeLayout.close();
             }
@@ -172,20 +206,23 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         switch (artID)
         {
             case 0:
-                return R.drawable.star;
+                return R.drawable.batman;
             case 1:
                 return R.drawable.star;
             case 2:
-                return R.drawable.trash;
+                return R.drawable.batman;
             case 3:
+                return R.drawable.trash;
+            case 4:
                 return R.drawable.star;
+            case 5:
+                return R.drawable.batman;
+            case 6:
+                return R.drawable.trash;
             default:
-                return R.drawable.star;
+                return R.drawable.batman;
         }
-
     }
-
-
 }
 
 
