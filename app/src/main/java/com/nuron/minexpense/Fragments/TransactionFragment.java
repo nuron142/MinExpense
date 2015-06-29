@@ -30,7 +30,9 @@ import java.util.Locale;
  */
 public class TransactionFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
+    public static final String TAG = "TransactionsFragment";
     double income_sum_final = 0, expense_sum_final = 0, left_sum_final = 0;
+    View rootView;
     private TransactionCursorAdaptor transactionCursorAdapter;
     private ListView mListView;
     private Handler handler;
@@ -51,11 +53,10 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
 //        }
 //    }
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.transactions_fragment, container, false);
+        rootView = inflater.inflate(R.layout.transactions_fragment, container, false);
 
         handler = new Handler();
 
@@ -68,7 +69,7 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         getLoaderManager().initLoader(0, null, this);
         getLoaderManager().initLoader(1, null, this);
 
-        mListView = (ListView) getView().findViewById(R.id.list);
+        mListView = (ListView) rootView.findViewById(R.id.list);
         transactionCursorAdapter = new TransactionCursorAdaptor(getActivity(), null);
         mListView.setAdapter(transactionCursorAdapter);
     }
@@ -139,14 +140,14 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         formatter.setRoundingMode(RoundingMode.HALF_UP);
 
-        TextView incomeText = (TextView) getView().findViewById(R.id.income_sum);
+        TextView incomeText = (TextView) rootView.findViewById(R.id.income_sum);
         incomeText.setText(formatter.format(income_sum_final));
 
-        TextView expenseText = (TextView) getView().findViewById(R.id.expense_sum);
+        TextView expenseText = (TextView) rootView.findViewById(R.id.expense_sum);
         expenseText.setText(formatter.format(expense_sum_final));
 
 
-        ProgressBar pb = (ProgressBar) getView().findViewById(R.id.progressBarLevel);
+        ProgressBar pb = (ProgressBar) rootView.findViewById(R.id.progressBarLevel);
         left_sum_final = (100 * (income_sum_final - expense_sum_final)) / income_sum_final;
         if (left_sum_final <= 0)
             pb.setProgress(100);

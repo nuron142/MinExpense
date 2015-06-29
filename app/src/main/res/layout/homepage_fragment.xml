@@ -103,7 +103,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="0dp"
-        android:layout_weight="0.03"
+        android:layout_weight="0.04"
         android:background="#F3716E" />
 
     <LinearLayout
@@ -120,7 +120,7 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
+            android:background="?attr/selectableItemBackground"
             android:padding="0dp"
             android:text="Expense"
             android:textColor="@android:color/white" />
@@ -136,7 +136,8 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
-            android:background="@android:color/transparent"
+
+            android:background="?attr/selectableItemBackground"
             android:padding="0dp"
             android:text="Income"
             android:textColor="@android:color/white" />

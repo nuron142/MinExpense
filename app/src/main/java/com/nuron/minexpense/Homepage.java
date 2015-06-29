@@ -36,7 +36,8 @@ public class Homepage extends BaseActivity implements
 
             HomePageFragment firstFragment = new HomePageFragment();
             firstFragment.setArguments(getIntent().getExtras());
-            getSupportFragmentManager().beginTransaction().add(R.id.fragment_container, firstFragment).commit();
+            getSupportFragmentManager().beginTransaction()
+                    .add(R.id.fragment_container, firstFragment, HomePageFragment.TAG).commit();
         }
     }
 
@@ -47,14 +48,18 @@ public class Homepage extends BaseActivity implements
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         if (fragmentID == Utilities.TYPE_EXPENSE) {
             ExpenseFragment expenseFragment = new ExpenseFragment();
-            fragmentTransaction.replace(R.id.fragment_container, expenseFragment);
+            fragmentTransaction
+                    .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out, R.anim.abc_fade_in, R.anim.abc_fade_out)
+                    .replace(R.id.fragment_container, expenseFragment, ExpenseFragment.TAG);
             setToolbar("ADD EXPENSE");
         } else if (fragmentID == Utilities.TYPE_INCOME) {
-            IncomeFragment expenseFragment = new IncomeFragment();
-            fragmentTransaction.replace(R.id.fragment_container, expenseFragment);
+            IncomeFragment incomeFragment = new IncomeFragment();
+            fragmentTransaction
+                    .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out, R.anim.abc_fade_in, R.anim.abc_fade_out)
+                    .replace(R.id.fragment_container, incomeFragment, IncomeFragment.TAG);
             setToolbar("ADD INCOME");
         }
-        fragmentTransaction.addToBackStack("MinExpense");
+        fragmentTransaction.addToBackStack(HomePageFragment.TAG);
         fragmentTransaction.commit();
     }
 

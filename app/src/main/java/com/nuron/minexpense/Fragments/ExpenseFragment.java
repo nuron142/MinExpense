@@ -31,10 +31,12 @@ import java.util.List;
  * Created by sunil on 24-Jun-15.
  */
 public class ExpenseFragment extends Fragment {
+    public static final String TAG = "TransactionsFragment";
     boolean update = false;
     Uri uri;
     Utilities utilities;
     saveExpenseListener mListener;
+    View rootView;
 
     DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener() {
         @Override
@@ -52,7 +54,7 @@ public class ExpenseFragment extends Fragment {
                 day = Integer.toString(dayOfMonth);
 
             String selectedDate = utilities.getDateFormat(String.valueOf(year) + "-" + month + "-" + day, Utilities.FROM_DATE_PICKER_TO_EDIT_TEXT);
-            EditText date = (EditText) getView().findViewById(R.id.add_date);
+            EditText date = (EditText) rootView.findViewById(R.id.add_date);
             date.setText(selectedDate);
         }
     };
@@ -71,7 +73,7 @@ public class ExpenseFragment extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        final View rootView = inflater.inflate(R.layout.expense_fragment, container, false);
+        rootView = inflater.inflate(R.layout.expense_fragment, container, false);
 
 
         sqLiteDBHelper = new SQLiteDBHelper(getActivity());

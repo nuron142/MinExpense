@@ -3,7 +3,7 @@
         <item
             android:id="@+id/navigation_item_1"
 
-            android:title="Expense" />
+            android:title="Home" />
         <item
             android:id="@+id/navigation_item_2"
 

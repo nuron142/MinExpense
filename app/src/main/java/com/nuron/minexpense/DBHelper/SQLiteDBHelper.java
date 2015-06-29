@@ -68,7 +68,6 @@ public class SQLiteDBHelper extends SQLiteOpenHelper {
 
     public ContentValues createRowContent(Transaction transaction){
 
-        Log.d("3","create row content");
         ContentValues contentValues = new ContentValues();
         contentValues.put(TRANSACTION_NAME, transaction.getName());
         contentValues.put(TRANSACTION_AMOUNT,transaction.getAmount());
