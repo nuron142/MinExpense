@@ -1,5 +1,7 @@
 package com.nuron.minexpense.Fragments;
 
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -59,6 +61,11 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         rootView = inflater.inflate(R.layout.transactions_fragment, container, false);
 
         handler = new Handler();
+
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        TextView budget_text = (TextView) rootView.findViewById(R.id.budget_text);
+        String budget_saved_value = sharedPref.getString(getString(R.string.Budget_value), "0");
+        budget_text.setText(budget_saved_value);
 
         return rootView;
     }

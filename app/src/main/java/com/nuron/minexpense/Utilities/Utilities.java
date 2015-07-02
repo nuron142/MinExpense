@@ -2,7 +2,10 @@ package com.nuron.minexpense.Utilities;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created by sunil on 10-Jun-15.
@@ -57,6 +60,109 @@ public class Utilities {
         }
         return formatedDate;
     }
+
+    public double getDayWeight(int day)
+    {
+        double dayWeight;
+
+        List<Double> dayWeightList1 = new ArrayList<>();
+        dayWeightList1.add(0.75); // Monday
+        dayWeightList1.add(0.65);
+        dayWeightList1.add(0.85);
+        dayWeightList1.add(0.75);
+        dayWeightList1.add(1.25);
+        dayWeightList1.add(1.50); // Saturday
+        dayWeightList1.add(1.25); // Sunday
+
+        List<Double> dayWeightList2 = new ArrayList<>();
+        dayWeightList2.add(0.75);
+        dayWeightList2.add(0.70);
+        dayWeightList2.add(0.85);
+        dayWeightList2.add(0.70);
+        dayWeightList2.add(1.0);
+        dayWeightList2.add(1.50);
+        dayWeightList2.add(1.50);
+
+        List<Double> dayWeightList3 = new ArrayList<>();
+        dayWeightList3.add(0.85);
+        dayWeightList3.add(0.65);
+        dayWeightList3.add(0.80);
+        dayWeightList3.add(0.70);
+        dayWeightList3.add(1.35);
+        dayWeightList3.add(1.50);
+        dayWeightList3.add(1.15);
+
+        List<Double> dayWeightList4 = new ArrayList<>();
+        dayWeightList4.add(0.70);
+        dayWeightList4.add(0.85);
+        dayWeightList4.add(0.70);
+        dayWeightList4.add(0.75);
+        dayWeightList4.add(1.15);
+        dayWeightList4.add(1.50);
+        dayWeightList4.add(1.35);
+
+        Calendar now = Calendar.getInstance();
+        int weekNumber = now.get(Calendar.WEEK_OF_YEAR);
+
+        switch (weekNumber % 4)
+        {
+            case 0:
+                dayWeight = dayWeightList1.get(day);
+                break;
+            case 1:
+                dayWeight = dayWeightList2.get(day);
+                break;
+            case 2:
+                dayWeight = dayWeightList3.get(day);
+                break;
+            case 3:
+                dayWeight = dayWeightList4.get(day);
+                break;
+            default:
+                dayWeight=0;
+                break;
+        }
+
+        return dayWeight;
+    }
+
+
+    public double getTodayExpenseMax()
+    {
+        double todayWeight=0;
+        Calendar now = Calendar.getInstance();
+        int today = now.get(Calendar.DAY_OF_WEEK);
+
+        switch (today)
+        {
+            case Calendar.MONDAY:
+                todayWeight = getDayWeight(0);
+                break;
+            case Calendar.TUESDAY:
+                todayWeight = getDayWeight(1);
+                break;
+            case Calendar.WEDNESDAY:
+                todayWeight = getDayWeight(2);
+                break;
+            case Calendar.THURSDAY:
+                todayWeight = getDayWeight(3);
+                break;
+            case Calendar.FRIDAY:
+                todayWeight = getDayWeight(4);
+                break;
+            case Calendar.SATURDAY:
+                todayWeight = getDayWeight(5);
+                break;
+            case Calendar.SUNDAY:
+                todayWeight = getDayWeight(6);
+                break;
+            default:
+                todayWeight = 0;
+                break;
+        }
+        return todayWeight;
+    }
+
 
 
 }

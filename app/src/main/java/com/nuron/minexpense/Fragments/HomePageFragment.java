@@ -2,6 +2,8 @@ package com.nuron.minexpense.Fragments;
 
 
 import android.app.Activity;
+import android.content.Context;
+import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -67,8 +70,6 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
             @Override
             public void onClick(View v) {
                 mListener.AddExpenseClick(Utilities.TYPE_EXPENSE);
-//                Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
-//                startActivity(intent);
             }
         });
 
@@ -76,11 +77,22 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         add_income.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                Intent intent = new Intent("com.nuron.minexpense.ADD_INCOME");
-//                startActivity(intent);
                 mListener.AddExpenseClick(Utilities.TYPE_INCOME);
             }
         });
+
+        final EditText budget = (EditText) rootView.findViewById(R.id.budget_edittext);
+        TextView budget_text = (TextView) rootView.findViewById(R.id.budget_text);
+        Button budget_save = (Button) rootView.findViewById(R.id.budget_save);
+        budget_save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                updateBudget(budget.getText().toString(),true);
+            }
+        });
+
+        updateBudget("",false);
+
         return rootView;
     }
 
@@ -200,6 +212,26 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
     public interface AddExpenseClickListener {
         void AddExpenseClick(int fragmentID);
+    }
+
+    public void updateBudget(String value,boolean update)
+    {
+        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+
+        if(update)
+        {
+            if(value.equals(""))
+                value="0";
+            SharedPreferences.Editor editor = sharedPref.edit();
+            editor.putString(getString(R.string.Budget_value), value);
+            editor.commit();
+
+        }
+
+        TextView budget_text = (TextView) rootView.findViewById(R.id.budget_text);
+        String budget_saved_value = sharedPref.getString(getString(R.string.Budget_value), "0");
+        budget_text.setText(budget_saved_value);
+
     }
 }
 
