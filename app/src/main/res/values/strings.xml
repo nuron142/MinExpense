@@ -9,6 +9,7 @@
 
     <string name="closeDrawer">Navigation View</string>
     <string name="openDrawer">Navigation View Closed</string>
+    <string name="Saved_Values_File">com.nuron.minexpense.SAVED_VALUES_FILE</string>
     <string name="Budget_value">com.nuron.minexpense.BUDGET_VALUE</string>
 
 </resources>

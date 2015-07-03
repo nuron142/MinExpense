@@ -216,7 +216,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
     public void updateBudget(String value,boolean update)
     {
-        SharedPreferences sharedPref = getActivity().getPreferences(Context.MODE_PRIVATE);
+        SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.Saved_Values_File),Context.MODE_PRIVATE);
 
         if(update)
         {

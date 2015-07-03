@@ -1,5 +1,10 @@
 package com.nuron.minexpense.Utilities;
 
+import android.content.Context;
+import android.content.SharedPreferences;
+
+import com.nuron.minexpense.R;
+
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -19,8 +24,10 @@ public class Utilities {
 
     public static final int TYPE_INCOME = 0;
     public static final int TYPE_EXPENSE = 1;
+    private Context context;
 
-    public Utilities(){
+    public Utilities(Context contextActivity){
+        context=contextActivity;
     }
 
     public String getDateFormat(String date,int option)
@@ -126,10 +133,9 @@ public class Utilities {
         return dayWeight;
     }
 
-
-    public double getTodayExpenseMax()
+    public double getTodayExpenseMax(Context context)
     {
-        double todayWeight=0;
+        double todayWeight=0,todayExpenseMax=0;
         Calendar now = Calendar.getInstance();
         int today = now.get(Calendar.DAY_OF_WEEK);
 
@@ -160,9 +166,13 @@ public class Utilities {
                 todayWeight = 0;
                 break;
         }
+
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.Saved_Values_File), Context.MODE_PRIVATE);
+        String monthlyBudget = sharedPref.getString(context.getString(R.string.Budget_value), "0");
+        if (monthlyBudget.equals("0"))
+            return  0;
+
+        int daysInMonth = now.getActualMaximum(Calendar.DAY_OF_MONTH);
         return todayWeight;
     }
-
-
-
 }
