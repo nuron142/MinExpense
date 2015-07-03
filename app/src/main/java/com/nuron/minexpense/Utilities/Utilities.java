@@ -133,46 +133,82 @@ public class Utilities {
         return dayWeight;
     }
 
-    public double getTodayExpenseMax(Context context)
+    public double getTodayExpenseMax(Context context , double expenseSumTillToday)
     {
         double todayWeight=0,todayExpenseMax=0;
         Calendar now = Calendar.getInstance();
         int today = now.get(Calendar.DAY_OF_WEEK);
 
-        switch (today)
+        if(now.get(Calendar.DAY_OF_MONTH) <= 28)
         {
-            case Calendar.MONDAY:
-                todayWeight = getDayWeight(0);
-                break;
-            case Calendar.TUESDAY:
-                todayWeight = getDayWeight(1);
-                break;
-            case Calendar.WEDNESDAY:
-                todayWeight = getDayWeight(2);
-                break;
-            case Calendar.THURSDAY:
-                todayWeight = getDayWeight(3);
-                break;
-            case Calendar.FRIDAY:
-                todayWeight = getDayWeight(4);
-                break;
-            case Calendar.SATURDAY:
-                todayWeight = getDayWeight(5);
-                break;
-            case Calendar.SUNDAY:
-                todayWeight = getDayWeight(6);
-                break;
-            default:
-                todayWeight = 0;
-                break;
+            switch (today)
+            {
+                case Calendar.MONDAY:
+                    todayWeight = getDayWeight(0);
+                    break;
+                case Calendar.TUESDAY:
+                    todayWeight = getDayWeight(1);
+                    break;
+                case Calendar.WEDNESDAY:
+                    todayWeight = getDayWeight(2);
+                    break;
+                case Calendar.THURSDAY:
+                    todayWeight = getDayWeight(3);
+                    break;
+                case Calendar.FRIDAY:
+                    todayWeight = getDayWeight(4);
+                    break;
+                case Calendar.SATURDAY:
+                    todayWeight = getDayWeight(5);
+                    break;
+                case Calendar.SUNDAY:
+                    todayWeight = getDayWeight(6);
+                    break;
+                default:
+                    todayWeight = 0;
+                    break;
+            }
         }
+        else
+            todayWeight=1.0;
 
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.Saved_Values_File), Context.MODE_PRIVATE);
         String monthlyBudget = sharedPref.getString(context.getString(R.string.Budget_value), "0");
         if (monthlyBudget.equals("0"))
             return  0;
 
-        int daysInMonth = now.getActualMaximum(Calendar.DAY_OF_MONTH);
-        return todayWeight;
+        double amountLeft = Double.parseDouble(monthlyBudget) - expenseSumTillToday;
+
+        if(amountLeft < 0)
+            return 0;
+
+        int daysLeftInMonth = now.getActualMaximum(Calendar.DAY_OF_MONTH) - now.get(Calendar.DAY_OF_MONTH);
+
+        double newDailyBudget = amountLeft /(double)daysLeftInMonth;
+
+        todayExpenseMax = todayWeight * newDailyBudget;
+        return todayExpenseMax;
+    }
+
+    public int updateBudgetNew()
+    {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.Saved_Values_File), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        double monthlyBudget = Double.parseDouble(sharedPref.getString(context.getString(R.string.Budget_value), "0"));
+        if (monthlyBudget == 0)
+            return  0;
+
+        double monthlyIncome = Double.parseDouble(sharedPref.getString(context.getString(R.string.Monthly_Income), "0"));
+        if (monthlyIncome == 0)
+            return  0;
+
+        if(monthlyIncome < monthlyBudget)
+        {
+            editor.putString(context.getString(R.string.Budget_value), String.valueOf(monthlyIncome));
+            editor.commit();
+        }
+        
+        return 0;
     }
 }

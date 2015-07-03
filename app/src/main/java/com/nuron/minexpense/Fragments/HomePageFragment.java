@@ -228,6 +228,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
         }
 
+
         TextView budget_text = (TextView) rootView.findViewById(R.id.budget_text);
         String budget_saved_value = sharedPref.getString(getString(R.string.Budget_value), "0");
         budget_text.setText(budget_saved_value);
