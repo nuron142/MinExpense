@@ -8,13 +8,13 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.util.TypedValue;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 
+import com.nuron.minexpense.Fragments.BudgetFragment;
 import com.nuron.minexpense.Fragments.TransactionFragment;
 import com.nuron.minexpense.R;
 
@@ -59,7 +59,6 @@ public abstract class BaseActivity extends AppCompatActivity {
                                                  getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1);
                                          String backEntryName = backEntry.getName();
                                          if (backEntryName.equals(TransactionFragment.TAG)) {
-                                             Log.d("1", "Home");
                                              new Handler().postDelayed(new Runnable() {
                                                  @Override
                                                  public void run() {
@@ -75,6 +74,35 @@ public abstract class BaseActivity extends AppCompatActivity {
                                  return true;
 
                              case R.id.navigation_item_2:
+                                 manager = getSupportFragmentManager();
+                                 if (manager != null) {
+                                     int backStackEntryCount = manager.getBackStackEntryCount();
+                                     if (backStackEntryCount == 0) {
+                                         new Handler().postDelayed(new Runnable() {
+                                             @Override
+                                             public void run() {
+                                                 if (findViewById(R.id.fragment_container) != null) {
+                                                     BudgetFragment budgetFragment = new BudgetFragment();
+                                                     budgetFragment.setArguments(getIntent().getExtras());
+
+                                                     getSupportFragmentManager().beginTransaction()
+                                                             .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out, R.anim.abc_fade_in, R.anim.abc_fade_out)
+                                                             .replace(R.id.fragment_container, budgetFragment, BudgetFragment.TAG)
+                                                             .addToBackStack(BudgetFragment.TAG)
+                                                             .commit();
+
+                                                     setDrawer("SET BUDGET");
+                                                 }
+                                             }
+                                         }, 200);
+                                     } else if (backStackEntryCount > 0) {
+                                         FragmentManager.BackStackEntry backEntry =
+                                                 getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1);
+                                         String backEntryName = backEntry.getName();
+                                         if (backEntryName.equals(BudgetFragment.TAG))
+                                             return true;
+                                     }
+                                 }
 
                                  return true;
 
@@ -207,4 +235,24 @@ public abstract class BaseActivity extends AppCompatActivity {
         }
     }
 
+    public void setToolbar(String title) {
+        disableDrawer();
+        Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
+        toolbar.setElevation(0);
+        setSupportActionBar(toolbar);
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+            getSupportActionBar().setTitle(title);
+        }
+
+        toolbar.setNavigationIcon(R.drawable.ic_up);
+        toolbar.setNavigationOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                FragmentManager fragmentManager = getSupportFragmentManager();
+                fragmentManager.popBackStack();
+                setDrawer("MinExpense");
+            }
+        });
+    }
 }

@@ -13,5 +13,6 @@
     <string name="Budget_value">BUDGET_VALUE</string>
     <string name="Budget_Left_value">BUDGET_LEFT_VALUE</string>
     <string name="Monthly_Income">MOTHLY_INCOME</string>
+    <string name="Today_Expense_Max">TODAY_EXPENSE_MAX</string>
 
 </resources>

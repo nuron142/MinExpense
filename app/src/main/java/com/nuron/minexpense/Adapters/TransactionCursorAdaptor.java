@@ -36,7 +36,7 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
 
     public TransactionCursorAdaptor(Context context, Cursor cursor) {
         super(context, cursor, true);
-        utilities=new Utilities();
+        utilities = new Utilities(context);
     }
 
     @Override

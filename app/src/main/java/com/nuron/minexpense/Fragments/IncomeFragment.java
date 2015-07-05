@@ -90,7 +90,7 @@ public class IncomeFragment extends Fragment {
         final RecyclerAdapter recyclerAdapter = new RecyclerAdapter(artImageId);
         rv.setAdapter(recyclerAdapter);
 
-        utilities = new Utilities();
+        utilities = new Utilities(getActivity());
 
         final EditText name = (EditText) rootView.findViewById(R.id.add_name);
         //final EditText amount = (EditText)  rootView.findViewById(R.id.add_amount_material);

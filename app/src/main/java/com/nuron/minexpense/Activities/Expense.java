@@ -89,7 +89,7 @@ public class Expense extends AppCompatActivity{
         final RecyclerAdapter recyclerAdapter = new RecyclerAdapter(artImageId);
         rv.setAdapter(recyclerAdapter);
 
-        utilities=new Utilities();
+        utilities = new Utilities(this);
 
         final EditText name = (EditText) findViewById(R.id.add_name);
         final EditText amount = (EditText) findViewById(R.id.add_amount);

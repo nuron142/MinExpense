@@ -5,6 +5,7 @@ import android.content.SharedPreferences;
 
 import com.nuron.minexpense.R;
 
+import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -24,6 +25,11 @@ public class Utilities {
 
     public static final int TYPE_INCOME = 0;
     public static final int TYPE_EXPENSE = 1;
+
+    public static final int TODAY_DATE = 0;
+    public static final int MONTH_DATE = 1;
+    public static final int MONTH_DATE_TILL_YESTERDAY = 2;
+
     private Context context;
 
     public Utilities(Context contextActivity){
@@ -133,9 +139,9 @@ public class Utilities {
         return dayWeight;
     }
 
-    public double getTodayExpenseMax(Context context , double expenseSumTillToday)
+    public double getTodayExpenseMax(double expenseSumTillYesterday)
     {
-        double todayWeight=0,todayExpenseMax=0;
+        double todayWeight, todayExpenseMax;
         Calendar now = Calendar.getInstance();
         int today = now.get(Calendar.DAY_OF_WEEK);
 
@@ -172,12 +178,11 @@ public class Utilities {
         else
             todayWeight=1.0;
 
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.Saved_Values_File), Context.MODE_PRIVATE);
-        String monthlyBudget = sharedPref.getString(context.getString(R.string.Budget_value), "0");
+        String monthlyBudget = readFromSharedPref(R.string.Budget_value);
         if (monthlyBudget.equals("0"))
             return  0;
 
-        double amountLeft = Double.parseDouble(monthlyBudget) - expenseSumTillToday;
+        double amountLeft = Double.parseDouble(monthlyBudget) - expenseSumTillYesterday;
 
         if(amountLeft < 0)
             return 0;
@@ -187,28 +192,87 @@ public class Utilities {
         double newDailyBudget = amountLeft /(double)daysLeftInMonth;
 
         todayExpenseMax = todayWeight * newDailyBudget;
+        writeToSharedPref(R.string.Today_Expense_Max, String.valueOf(todayExpenseMax));
         return todayExpenseMax;
     }
 
-    public int updateBudgetNew()
+    public void updateNewBudget(String newBudget)
     {
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.Saved_Values_File), Context.MODE_PRIVATE);
         SharedPreferences.Editor editor = sharedPref.edit();
 
-        double monthlyBudget = Double.parseDouble(sharedPref.getString(context.getString(R.string.Budget_value), "0"));
-        if (monthlyBudget == 0)
-            return  0;
+//        double monthlyBudget = Double.parseDouble(sharedPref.getString(context.getString(R.string.Budget_value), "0"));
+//        if (monthlyBudget == 0)
+//            return  0;
 
-        double monthlyIncome = Double.parseDouble(sharedPref.getString(context.getString(R.string.Monthly_Income), "0"));
-        if (monthlyIncome == 0)
-            return  0;
+//        double monthlyIncome = Double.parseDouble(sharedPref.getString(context.getString(R.string.Monthly_Income), "0"));
+//        if (monthlyIncome == 0)
+//            return  0;
+//
+//        if(monthlyIncome < monthlyBudget)
+//        {
+        editor.putString(context.getString(R.string.Budget_value), newBudget);
+        editor.apply();
+        // }
+    }
 
-        if(monthlyIncome < monthlyBudget)
+
+    public void writeToSharedPref(int stringID, String value) {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.Saved_Values_File), Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = sharedPref.edit();
+
+        editor.putString(context.getString(stringID), value);
+        editor.apply();
+    }
+
+    public String readFromSharedPref(int stringID) {
+        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.Saved_Values_File), Context.MODE_PRIVATE);
+        return sharedPref.getString(context.getString(stringID), "0");
+    }
+
+    public String[] getFirstAndLastDate(int isMonth) {
+        if (isMonth == MONTH_DATE)
         {
-            editor.putString(context.getString(R.string.Budget_value), String.valueOf(monthlyIncome));
-            editor.commit();
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.DATE, 1);
+            Date firstDate = cal.getTime();
+            cal.set(Calendar.DATE, cal.getActualMaximum(Calendar.DATE));
+            Date lastDate = cal.getTime();
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            String monthStart = dateFormat.format(firstDate) + " 00:00:00";
+            String monthEnd = dateFormat.format(lastDate) + " 23:59:59";
+            return new String[]{monthStart, monthEnd};
+        } else if (isMonth == TODAY_DATE) {
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+            Date date = new Date();
+            String today_start = dateFormat.format(date) + " 00:00:00";
+            String today_end = dateFormat.format(date) + " 23:59:59";
+
+            return new String[]{today_start, today_end};
+        } else if (isMonth == MONTH_DATE_TILL_YESTERDAY) {
+            Calendar now = Calendar.getInstance();
+
+            if (now.get(Calendar.DAY_OF_MONTH) == 1) {
+                String monthYesterday_start = "1000-10-10" + " 00:00:00";
+                String monthYesterday_end = "1000-10-10" + " 23:59:59";
+                return new String[]{monthYesterday_start, monthYesterday_end};
+            } else {
+                Calendar cal = Calendar.getInstance();
+                cal.set(Calendar.DATE, 1);
+                Date firstDate = cal.getTime();
+                cal = Calendar.getInstance();
+                cal.set(Calendar.DATE, now.get(Calendar.DAY_OF_MONTH) - 1);
+                Date lastDate = cal.getTime();
+
+                DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+                String monthYesterday_start = dateFormat.format(firstDate) + " 00:00:00";
+                String monthYesterday_end = dateFormat.format(lastDate) + " 23:59:59";
+
+                return new String[]{monthYesterday_start, monthYesterday_end};
+            }
         }
-        
-        return 0;
+        return null;
     }
 }

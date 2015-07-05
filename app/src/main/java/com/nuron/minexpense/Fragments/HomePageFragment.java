@@ -2,8 +2,6 @@ package com.nuron.minexpense.Fragments;
 
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -12,11 +10,11 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -28,11 +26,8 @@ import com.nuron.minexpense.R;
 import com.nuron.minexpense.Utilities.Utilities;
 
 import java.math.RoundingMode;
-import java.text.DateFormat;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Locale;
 
 /**
@@ -47,6 +42,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     private TransactionCursorAdaptor transactionCursorAdapter;
     private ListView mListView;
     private Handler handler;
+    private Utilities utilities;
 
     @Override
     public void onAttach(Activity activity) {
@@ -64,6 +60,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         rootView = inflater.inflate(R.layout.homepage_fragment, container, false);
 
         handler = new Handler();
+        utilities = new Utilities(getActivity());
 
         Button add_expense = (Button) rootView.findViewById(R.id.add_expense);
         add_expense.setOnClickListener(new View.OnClickListener() {
@@ -81,18 +78,6 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
             }
         });
 
-        final EditText budget = (EditText) rootView.findViewById(R.id.budget_edittext);
-        TextView budget_text = (TextView) rootView.findViewById(R.id.budget_text);
-        Button budget_save = (Button) rootView.findViewById(R.id.budget_save);
-        budget_save.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                updateBudget(budget.getText().toString(),true);
-            }
-        });
-
-        updateBudget("",false);
-
         return rootView;
     }
 
@@ -101,6 +86,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         super.onActivityCreated(savedInstanceState);
         getLoaderManager().initLoader(0, null, this);
         getLoaderManager().initLoader(1, null, this);
+        getLoaderManager().initLoader(2, null, this);
 
         mListView = (ListView) rootView.findViewById(R.id.list);
         transactionCursorAdapter = new TransactionCursorAdaptor(getActivity(), null);
@@ -110,10 +96,9 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == 0) {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = new Date();
-            String today_start = dateFormat.format(date) + " 00:00:00";
-            String today_end = dateFormat.format(date) + " 23:59:59";
+            String[] today = utilities.getFirstAndLastDate(Utilities.TODAY_DATE);
+            String today_start = today[0];
+            String today_end = today[1];
 
             String selection = SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? ";
 
@@ -121,17 +106,36 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
             Uri uri = TransactionProvider.CONTENT_URI;
             return new CursorLoader(getActivity(), uri, null, selection, selectionArgs, null);
+        } else if (id == 1) {
+            String[] month = utilities.getFirstAndLastDate(Utilities.MONTH_DATE_TILL_YESTERDAY);
+
+            String month_start = month[0];
+            String month_end = month[1];
+
+            String[] projection = new String[]{"SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
+
+            String selection = SQLiteDBHelper.TRANSACTION_TIME + " >= ? AND " + SQLiteDBHelper.TRANSACTION_TIME + " <= ? AND "
+                    + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE + " == 1";
+
+            String[] selectionArgs = new String[]{month_start, month_end};
+
+            Uri uri = TransactionProvider.CONTENT_URI;
+            return new CursorLoader(getActivity(), uri, projection, selection, selectionArgs, null);
         } else {
-            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-            Date date = new Date();
-            String today_start = dateFormat.format(date) + " 00:00:00";
-            String today_end = dateFormat.format(date) + " 23:59:59";
+            String[] today = utilities.getFirstAndLastDate(Utilities.TODAY_DATE);
+
+            String today_start = today[0];
+            String today_end = today[1];
+
+//            String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
+//                    "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
+//
+//            String selection = SQLiteDBHelper.TRANSACTION_TIME + " >= ? AND " + SQLiteDBHelper.TRANSACTION_TIME + " <= ? "
+//                    + " GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
 
             String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
                     "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
-            String selection =
-                    SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? "
-                            + " GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
+            String selection = SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? " + " GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
 
             String[] selectionArgs = new String[]{today_start, today_end};
 
@@ -144,11 +148,18 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (loader.getId() == 0) {
             transactionCursorAdapter.swapCursor(cursor);
-        } else {
+        } else if (loader.getId() == 1) {
             final Cursor cursor1 = cursor;
             handler.post(new Runnable() {
                 public void run() {
-                    updateSum(cursor1);
+                    updateTodayExpenseMax(cursor1);
+                }
+            });
+        } else {
+            final Cursor cursor2 = cursor;
+            handler.post(new Runnable() {
+                public void run() {
+                    updateSum(cursor2);
                 }
             });
         }
@@ -165,6 +176,23 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         super.onResume();
         getLoaderManager().restartLoader(0, null, this);
         getLoaderManager().restartLoader(1, null, this);
+        getLoaderManager().restartLoader(2, null, this);
+    }
+
+    public void updateTodayExpenseMax(Cursor cursor) {
+        double monthlyExpense = 0, monthlyExpense_text;
+        if (cursor != null && cursor.moveToFirst()) {
+            if (cursor.getString(0) != null)
+                monthlyExpense = Double.parseDouble(cursor.getString(0));
+        }
+
+        monthlyExpense_text = utilities.getTodayExpenseMax(monthlyExpense);
+
+        DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        formatter.setRoundingMode(RoundingMode.HALF_UP);
+
+        TextView today_max_text = (TextView) rootView.findViewById(R.id.today_expenseMax_text);
+        today_max_text.setText(formatter.format(monthlyExpense_text));
     }
 
     public void updateSum(Cursor cursor) {
@@ -173,7 +201,6 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
         transactionSumBundle.putString("income_sum", "0");
         transactionSumBundle.putString("expense_sum", "0");
-
         while (cursor.moveToNext()) {
             switch (cursor.getString(0)) {
                 case "0":
@@ -198,15 +225,21 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         TextView expenseText = (TextView) rootView.findViewById(R.id.expense_sum);
         expenseText.setText(formatter.format(expense_sum_final));
 
+        TextView expenseTodayText = (TextView) rootView.findViewById(R.id.today_expense_text);
+        expenseTodayText.setText(formatter.format(expense_sum_final));
+
+        double todayExpenseMax = Double.parseDouble(utilities.readFromSharedPref(R.string.Today_Expense_Max));
 
         ProgressBar pb = (ProgressBar) rootView.findViewById(R.id.progressBarLevel);
-        left_sum_final = (100 * (income_sum_final - expense_sum_final)) / income_sum_final;
-        if (left_sum_final <= 0)
-            pb.setProgress(100);
-        else if (left_sum_final >= 100)
+        left_sum_final = (100 * (todayExpenseMax - expense_sum_final)) / todayExpenseMax;
+        Log.d("1", String.valueOf(left_sum_final));
+//        if (left_sum_final <= 0)
+//            pb.setProgress(100);
+//        else
+        if (left_sum_final >= 100)
             pb.setProgress(1);
         else
-            pb.setProgress((int) left_sum_final);
+            pb.setProgress(100 - (int) left_sum_final);
 
     }
 
@@ -214,25 +247,5 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         void AddExpenseClick(int fragmentID);
     }
 
-    public void updateBudget(String value,boolean update)
-    {
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(getString(R.string.Saved_Values_File),Context.MODE_PRIVATE);
-
-        if(update)
-        {
-            if(value.equals(""))
-                value="0";
-            SharedPreferences.Editor editor = sharedPref.edit();
-            editor.putString(getString(R.string.Budget_value), value);
-            editor.commit();
-
-        }
-
-
-        TextView budget_text = (TextView) rootView.findViewById(R.id.budget_text);
-        String budget_saved_value = sharedPref.getString(getString(R.string.Budget_value), "0");
-        budget_text.setText(budget_saved_value);
-
-    }
 }
 

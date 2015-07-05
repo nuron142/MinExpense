@@ -7,7 +7,7 @@
         <item
             android:id="@+id/navigation_item_2"
 
-            android:title="Income" />
+            android:title="Budget" />
         <item
             android:id="@+id/navigation_item_3"
 
