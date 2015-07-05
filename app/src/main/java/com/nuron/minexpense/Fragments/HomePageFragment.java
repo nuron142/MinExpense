@@ -10,7 +10,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -232,10 +231,6 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
         ProgressBar pb = (ProgressBar) rootView.findViewById(R.id.progressBarLevel);
         left_sum_final = (100 * (todayExpenseMax - expense_sum_final)) / todayExpenseMax;
-        Log.d("1", String.valueOf(left_sum_final));
-//        if (left_sum_final <= 0)
-//            pb.setProgress(100);
-//        else
         if (left_sum_final >= 100)
             pb.setProgress(1);
         else
