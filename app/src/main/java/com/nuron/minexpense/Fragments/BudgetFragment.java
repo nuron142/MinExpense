@@ -1,8 +1,6 @@
 package com.nuron.minexpense.Fragments;
 
 import android.app.Activity;
-import android.content.Context;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
@@ -69,7 +67,7 @@ public class BudgetFragment extends Fragment {
         formatter.setRoundingMode(RoundingMode.HALF_UP);
 
         double newBudget = Double.parseDouble(set_budget.getText().toString());
-        utilities.updateNewBudget(formatter.format(newBudget));
+        utilities.writeToSharedPref(R.string.Budget_value, formatter.format(newBudget));
         getActivity().getContentResolver().notifyChange(TransactionProvider.CONTENT_URI, null);
 
     }
@@ -85,10 +83,8 @@ public class BudgetFragment extends Fragment {
         TextView year_text = (TextView) rootView.findViewById(R.id.year_text);
         year_text.setText(yearFormat.format(today));
 
-        SharedPreferences sharedPref = getActivity().getSharedPreferences(getActivity().getString(R.string.Saved_Values_File), Context.MODE_PRIVATE);
-        String currentBudget = sharedPref.getString(getActivity().getString(R.string.Budget_value), "0");
-
-        TextView current_budget_text = (TextView) rootView.findViewById(R.id.current_budget);
+        String currentBudget = utilities.readFromSharedPref(R.string.Budget_value);
+        TextView current_budget_text = (TextView) rootView.findViewById(R.id.current_budget_drawer);
         current_budget_text.setText("Rs " + currentBudget);
     }
 

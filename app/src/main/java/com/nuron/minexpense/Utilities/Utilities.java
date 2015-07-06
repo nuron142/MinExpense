@@ -5,13 +5,17 @@ import android.content.SharedPreferences;
 
 import com.nuron.minexpense.R;
 
+import java.math.RoundingMode;
 import java.text.DateFormat;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 /**
  * Created by sunil on 10-Jun-15.
@@ -196,26 +200,18 @@ public class Utilities {
         return todayExpenseMax;
     }
 
-    public void updateNewBudget(String newBudget)
+
+    public void updateAvailableBalance(double newIncome)
     {
-        SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.Saved_Values_File), Context.MODE_PRIVATE);
-        SharedPreferences.Editor editor = sharedPref.edit();
+        double currentBalance = Double.parseDouble(readFromSharedPref(R.string.Available_Balance));
+        double monthlyExpenseTotal = Double.parseDouble(readFromSharedPref(R.string.Monthly_Expense_Total));
 
-//        double monthlyBudget = Double.parseDouble(sharedPref.getString(context.getString(R.string.Budget_value), "0"));
-//        if (monthlyBudget == 0)
-//            return  0;
+        double newBalance = (currentBalance + newIncome) - monthlyExpenseTotal;
 
-//        double monthlyIncome = Double.parseDouble(sharedPref.getString(context.getString(R.string.Monthly_Income), "0"));
-//        if (monthlyIncome == 0)
-//            return  0;
-//
-//        if(monthlyIncome < monthlyBudget)
-//        {
-        editor.putString(context.getString(R.string.Budget_value), newBudget);
-        editor.apply();
-        // }
+        DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        formatter.setRoundingMode(RoundingMode.HALF_UP);
+        writeToSharedPref(R.string.Available_Balance, formatter.format(newBalance));
     }
-
 
     public void writeToSharedPref(int stringID, String value) {
         SharedPreferences sharedPref = context.getSharedPreferences(context.getString(R.string.Saved_Values_File), Context.MODE_PRIVATE);

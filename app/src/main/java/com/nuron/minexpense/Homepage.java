@@ -17,6 +17,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import com.nuron.minexpense.Fragments.BudgetFragment;
 import com.nuron.minexpense.Fragments.ExpenseFragment;
@@ -38,6 +39,8 @@ public class Homepage extends AppCompatActivity implements
     private NavigationView navigationView;
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
+    private Utilities utilities;
+    private TextView current_budget;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -45,6 +48,8 @@ public class Homepage extends AppCompatActivity implements
         setContentView(R.layout.homepage);
         //super.onCreateNavigationView();
 
+        current_budget = (TextView) findViewById(R.id.current_budget_drawer);
+        utilities = new Utilities(this);
         setNavigationDrawer();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
 
@@ -78,11 +83,6 @@ public class Homepage extends AppCompatActivity implements
         }
         fragmentTransaction.addToBackStack(HomePageFragment.TAG);
         fragmentTransaction.commit();
-    }
-
-
-    public void resumeDrawer(String title) {
-        //super.setDrawer(title);
     }
 
     @Override
@@ -193,7 +193,6 @@ public class Homepage extends AppCompatActivity implements
                                              return true;
                                      }
                                  }
-
                                  return true;
 
                              case R.id.navigation_item_3:
@@ -280,6 +279,9 @@ public class Homepage extends AppCompatActivity implements
             }
 
         };
+
+        String currentBudget = utilities.readFromSharedPref(R.string.Budget_value);
+        current_budget.setText("Rs " + currentBudget);
 
         drawerLayout.setDrawerListener(actionBarDrawerToggle);
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);

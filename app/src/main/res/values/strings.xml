@@ -11,8 +11,9 @@
     <string name="openDrawer">Navigation View Closed</string>
     <string name="Saved_Values_File">com.nuron.minexpense.SAVED_VALUES_FILE</string>
     <string name="Budget_value">BUDGET_VALUE</string>
-    <string name="Budget_Left_value">BUDGET_LEFT_VALUE</string>
     <string name="Monthly_Income">MOTHLY_INCOME</string>
     <string name="Today_Expense_Max">TODAY_EXPENSE_MAX</string>
+    <string name="Available_Balance">AVAILABLE_BALANCE</string>
+    <string name="Monthly_Expense_Total">MONTHLY_EXPENSE_TOTAL</string>
 
 </resources>

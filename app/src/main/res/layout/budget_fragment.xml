@@ -76,7 +76,7 @@
                     android:background="#000000" />
 
                 <TextView
-                    android:id="@+id/current_budget"
+                    android:id="@+id/current_budget_drawer"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginEnd="24dp"

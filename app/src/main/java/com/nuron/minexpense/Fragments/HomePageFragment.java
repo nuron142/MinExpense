@@ -38,6 +38,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     double income_sum_final = 0, expense_sum_final = 0, left_sum_final = 0;
     AddExpenseClickListener mListener;
     View rootView;
+    double monthlyExpenseTillYesterday = 0;
     private TransactionCursorAdaptor transactionCursorAdapter;
     private ListView mListView;
     private Handler handler;
@@ -179,13 +180,13 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     public void updateTodayExpenseMax(Cursor cursor) {
-        double monthlyExpense = 0, monthlyExpense_text;
+        double monthlyExpense_text;
         if (cursor != null && cursor.moveToFirst()) {
             if (cursor.getString(0) != null)
-                monthlyExpense = Double.parseDouble(cursor.getString(0));
+                monthlyExpenseTillYesterday = Double.parseDouble(cursor.getString(0));
         }
 
-        monthlyExpense_text = utilities.getTodayExpenseMax(monthlyExpense);
+        monthlyExpense_text = utilities.getTodayExpenseMax(monthlyExpenseTillYesterday);
 
         DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         formatter.setRoundingMode(RoundingMode.HALF_UP);
@@ -229,6 +230,9 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
         double todayExpenseMax = Double.parseDouble(utilities.readFromSharedPref(R.string.Today_Expense_Max));
 
+
+        utilities.writeToSharedPref(R.string.Monthly_Expense_Total, formatter.format(expense_sum_final + monthlyExpenseTillYesterday));
+
         ProgressBar pb = (ProgressBar) rootView.findViewById(R.id.progressBarLevel);
         left_sum_final = (100 * (todayExpenseMax - expense_sum_final)) / todayExpenseMax;
         if (left_sum_final >= 100)
@@ -241,6 +245,5 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     public interface AddExpenseClickListener {
         void AddExpenseClick(int fragmentID);
     }
-
 }
 
