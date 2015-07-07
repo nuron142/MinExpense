@@ -1,6 +1,11 @@
 package com.nuron.minexpense;
 
 
+import android.app.LoaderManager;
+import android.content.CursorLoader;
+import android.content.Loader;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -19,6 +24,8 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 
+import com.nuron.minexpense.ContentProvider.TransactionProvider;
+import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
 import com.nuron.minexpense.Fragments.BudgetFragment;
 import com.nuron.minexpense.Fragments.ExpenseFragment;
 import com.nuron.minexpense.Fragments.HomePageFragment;
@@ -26,8 +33,14 @@ import com.nuron.minexpense.Fragments.IncomeFragment;
 import com.nuron.minexpense.Fragments.TransactionFragment;
 import com.nuron.minexpense.Utilities.Utilities;
 
+import java.math.RoundingMode;
+import java.text.DecimalFormat;
+import java.text.DecimalFormatSymbols;
+import java.util.Locale;
+
 
 public class Homepage extends AppCompatActivity implements
+        LoaderManager.LoaderCallbacks<Cursor>,
         HomePageFragment.AddExpenseClickListener,
         FragmentManager.OnBackStackChangedListener,
         ExpenseFragment.saveExpenseListener,
@@ -40,15 +53,18 @@ public class Homepage extends AppCompatActivity implements
     private DrawerLayout drawerLayout;
     private ActionBarDrawerToggle actionBarDrawerToggle;
     private Utilities utilities;
-    private TextView current_budget;
+    private TextView current_budget, available_balance;
+    private Handler handler;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.homepage);
-        //super.onCreateNavigationView();
 
+        handler = new Handler();
+        getLoaderManager().initLoader(0, null, this);
         current_budget = (TextView) findViewById(R.id.current_budget_drawer);
+        available_balance = (TextView) findViewById(R.id.available_balance_drawer);
         utilities = new Utilities(this);
         setNavigationDrawer();
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
@@ -85,20 +101,36 @@ public class Homepage extends AppCompatActivity implements
         fragmentTransaction.commit();
     }
 
-    @Override
-    public void onBackStackChanged() {
-        FragmentManager manager = getSupportFragmentManager();
-        if (manager != null) {
-            int backStackEntryCount = manager.getBackStackEntryCount();
-            if (backStackEntryCount == 0)
-                return;
+    private void updateAvailableBalance(Cursor cursor) {
 
-            Fragment fragment = manager.getFragments()
-                    .get(backStackEntryCount - 1);
-            fragment.onResume();
+        Bundle transactionSumBundle = new Bundle();
+
+        transactionSumBundle.putString("income_sum", "0");
+        transactionSumBundle.putString("expense_sum", "0");
+
+        while (cursor.moveToNext()) {
+            switch (cursor.getString(0)) {
+                case "0":
+                    transactionSumBundle.putString("income_sum", cursor.getString(1));
+                    break;
+                case "1":
+                    transactionSumBundle.putString("expense_sum", cursor.getString(1));
+                    break;
+            }
         }
+
+        double income_sum_final = Double.parseDouble(transactionSumBundle.getString("income_sum"));
+        double expense_sum_final = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
+
+
+        DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        formatter.setRoundingMode(RoundingMode.HALF_UP);
+
+        double availableBalance = income_sum_final - expense_sum_final;
+        available_balance.setText(formatter.format(availableBalance));
     }
 
+    //region Fragment Listeners
     @Override
     public void saveExpense() {
 
@@ -120,7 +152,9 @@ public class Homepage extends AppCompatActivity implements
         fragmentManager.popBackStack();
         setDrawer("MinExpense");
     }
+    //endregion
 
+    //region Navigation drawer
     public void setNavigationDrawer() {
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
 
@@ -249,18 +283,9 @@ public class Homepage extends AppCompatActivity implements
             drawerLayout.closeDrawer(Gravity.LEFT);
         }
     }
+    //endregion
 
-    @Override
-    public void onBackPressed() {
-        if (isNavDrawerOpen()) {
-            closeNavDrawer();
-        } else {
-
-            super.onBackPressed();
-            setDrawer("MinExpense");
-        }
-    }
-
+    //region Drawer and Toolbar
     public void setDrawer(String title) {
 
         hideSoftKeyboard();
@@ -298,13 +323,6 @@ public class Homepage extends AppCompatActivity implements
         drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
     }
 
-    public void hideSoftKeyboard() {
-        if (getCurrentFocus() != null) {
-            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
-            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
-        }
-    }
-
     public void setToolbar(String title) {
         disableDrawer();
         Toolbar toolbar = (Toolbar) findViewById(R.id.tool_bar);
@@ -325,4 +343,68 @@ public class Homepage extends AppCompatActivity implements
             }
         });
     }
+    //endregion
+
+    //region Loader Implementation
+    @Override
+    public Loader<Cursor> onCreateLoader(int id, Bundle args) {
+
+        String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
+                "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
+        String selection = " 0 == 0 GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
+
+        Uri uri = TransactionProvider.CONTENT_URI;
+        return new CursorLoader(this, uri, projection, selection, null, null);
+    }
+
+    @Override
+    public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+
+        final Cursor cursor1 = cursor;
+        handler.post(new Runnable() {
+            public void run() {
+                updateAvailableBalance(cursor1);
+            }
+        });
+    }
+
+    @Override
+    public void onLoaderReset(Loader<Cursor> loader) {
+    }
+    //endregion
+
+    //region Misc
+    @Override
+    public void onBackStackChanged() {
+        FragmentManager manager = getSupportFragmentManager();
+        if (manager != null) {
+            int backStackEntryCount = manager.getBackStackEntryCount();
+            if (backStackEntryCount == 0)
+                return;
+
+            Fragment fragment = manager.getFragments()
+                    .get(backStackEntryCount - 1);
+            fragment.onResume();
+        }
+    }
+
+    public void hideSoftKeyboard() {
+        if (getCurrentFocus() != null) {
+            InputMethodManager inputMethodManager = (InputMethodManager) getSystemService(INPUT_METHOD_SERVICE);
+            inputMethodManager.hideSoftInputFromWindow(getCurrentFocus().getWindowToken(), 0);
+        }
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (isNavDrawerOpen()) {
+            closeNavDrawer();
+        } else {
+
+            super.onBackPressed();
+            setDrawer("MinExpense");
+        }
+    }
+    //endregion
+
 }

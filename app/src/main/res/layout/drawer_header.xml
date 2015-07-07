@@ -31,7 +31,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentStart="true"
-            android:layout_alignTop="@+id/available_balance"
+            android:layout_alignTop="@+id/available_balance_drawer"
             android:layout_gravity="bottom"
             android:layout_marginLeft="16dp"
             android:layout_marginRight="16dp"
@@ -39,7 +39,7 @@
             android:textColor="@android:color/black" />
 
         <TextView
-            android:id="@+id/available_balance"
+            android:id="@+id/available_balance_drawer"
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -70,7 +70,7 @@
             style="@style/TextAppearance.AppCompat.Subhead"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignEnd="@+id/available_balance"
+            android:layout_alignEnd="@+id/available_balance_drawer"
             android:layout_alignParentBottom="true"
             android:layout_gravity="right"
             android:text="Rs 9000"

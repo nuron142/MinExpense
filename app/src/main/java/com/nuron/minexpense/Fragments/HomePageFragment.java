@@ -127,12 +127,6 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
             String today_start = today[0];
             String today_end = today[1];
 
-//            String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
-//                    "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
-//
-//            String selection = SQLiteDBHelper.TRANSACTION_TIME + " >= ? AND " + SQLiteDBHelper.TRANSACTION_TIME + " <= ? "
-//                    + " GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
-
             String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
                     "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
             String selection = SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? " + " GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;

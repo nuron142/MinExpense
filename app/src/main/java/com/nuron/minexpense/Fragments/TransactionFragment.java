@@ -36,22 +36,6 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
     private TransactionCursorAdaptor transactionCursorAdapter;
     private ListView mListView;
     private Handler handler;
-//    AddExpenseClickListener mListener;
-//
-//
-//    public interface AddExpenseClickListener {
-//        public void AddExpenseClick(Bundle transaction);
-//    }
-//
-//    @Override
-//    public void onAttach(Activity activity) {
-//        super.onAttach(activity);
-//        try {
-//            mListener = (AddExpenseClickListener) activity;
-//        } catch (ClassCastException e) {
-//            throw new ClassCastException(activity.toString() + " must implement AddExpenseClickListener");
-//        }
-//    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -74,6 +58,12 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+    }
+
+    //region Loader Implementation
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == 0) {
             Uri uri = TransactionProvider.CONTENT_URI;
@@ -87,7 +77,6 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
             return new CursorLoader(getActivity(), uri, projection, selection, null, null);
         }
     }
-
 
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
@@ -108,11 +97,8 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         if (loader.getId() == 0)
             transactionCursorAdapter.swapCursor(null);
     }
+    //endregion
 
-    @Override
-    public void onResume() {
-        super.onResume();
-    }
 
     public void updateSum(Cursor cursor) {
 
