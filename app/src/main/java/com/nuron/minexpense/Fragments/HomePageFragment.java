@@ -35,7 +35,6 @@ import java.util.Locale;
 public class HomePageFragment extends Fragment implements LoaderManager.LoaderCallbacks<Cursor> {
 
     public static final String TAG = "MinExpenseFragment";
-    double income_sum_final = 0, expense_sum_final = 0, left_sum_final = 0;
     AddExpenseClickListener mListener;
     View rootView;
     double monthlyExpenseTillYesterday = 0;
@@ -186,7 +185,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         formatter.setRoundingMode(RoundingMode.HALF_UP);
 
         TextView today_max_text = (TextView) rootView.findViewById(R.id.today_expenseMax_text);
-        today_max_text.setText(formatter.format(monthlyExpense_text));
+        today_max_text.setText("/" + formatter.format(monthlyExpense_text));
     }
 
     public void updateSum(Cursor cursor) {
@@ -206,33 +205,36 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
             }
         }
 
-        income_sum_final = Double.parseDouble(transactionSumBundle.getString("income_sum"));
-        expense_sum_final = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
+        //double income_sum = Double.parseDouble(transactionSumBundle.getString("income_sum"));
+        double expense_sum = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
 
 
         DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         formatter.setRoundingMode(RoundingMode.HALF_UP);
 
-        TextView incomeText = (TextView) rootView.findViewById(R.id.income_sum);
-        incomeText.setText(formatter.format(income_sum_final));
-
-        TextView expenseText = (TextView) rootView.findViewById(R.id.expense_sum);
-        expenseText.setText(formatter.format(expense_sum_final));
-
-        TextView expenseTodayText = (TextView) rootView.findViewById(R.id.today_expense_text);
-        expenseTodayText.setText(formatter.format(expense_sum_final));
+//        TextView incomeText = (TextView) rootView.findViewById(R.id.income_sum);
+//        incomeText.setText(formatter.format(income_sum));
+//
+        TextView today_expense = (TextView) rootView.findViewById(R.id.today_expense);
+        today_expense.setText("₹ " + formatter.format(expense_sum));
 
         double todayExpenseMax = Double.parseDouble(utilities.readFromSharedPref(R.string.Today_Expense_Max));
 
-
-        utilities.writeToSharedPref(R.string.Monthly_Expense_Total, formatter.format(expense_sum_final + monthlyExpenseTillYesterday));
-
         ProgressBar pb = (ProgressBar) rootView.findViewById(R.id.progressBarLevel);
-        left_sum_final = (100 * (todayExpenseMax - expense_sum_final)) / todayExpenseMax;
-        if (left_sum_final >= 100)
+        double left_sum = todayExpenseMax - expense_sum;
+
+        if (left_sum <= 0)
+            left_sum = 0;
+
+        TextView leftTodayText = (TextView) rootView.findViewById(R.id.today_left_text);
+        leftTodayText.setText("₹ " + formatter.format(left_sum));
+
+        int left_sum_percent = (int) ((100 * left_sum) / todayExpenseMax);
+
+        if (left_sum_percent >= 100)
             pb.setProgress(1);
         else
-            pb.setProgress(100 - (int) left_sum_final);
+            pb.setProgress(100 - left_sum_percent);
 
     }
 
