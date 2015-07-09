@@ -179,13 +179,28 @@
         android:layout_height="0dp"
         android:layout_weight="0.2" />
 
-    <ListView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:id="@+id/list"
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="7"
-        android:divider="@android:color/transparent"
-        android:dividerHeight="1dp" />
+        android:orientation="vertical">
+
+        <ListView xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:divider="@android:color/transparent"
+            android:dividerHeight="1dp" />
+
+        <TextView
+            android:id="@+id/empty"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:gravity="center"
+            android:text="No transactions today" />
+
+    </LinearLayout>
+
 
     <View
         android:layout_width="match_parent"

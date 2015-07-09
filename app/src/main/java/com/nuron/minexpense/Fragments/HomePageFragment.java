@@ -90,6 +90,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         mListView = (ListView) rootView.findViewById(R.id.list);
         transactionCursorAdapter = new TransactionCursorAdaptor(getActivity(), null);
         mListView.setAdapter(transactionCursorAdapter);
+
     }
 
     @Override
@@ -141,6 +142,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (loader.getId() == 0) {
             transactionCursorAdapter.swapCursor(cursor);
+            mListView.setVisibility((transactionCursorAdapter.isEmpty()) ? View.GONE : View.VISIBLE);
         } else if (loader.getId() == 1) {
             final Cursor cursor1 = cursor;
             handler.post(new Runnable() {

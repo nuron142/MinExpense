@@ -55,6 +55,7 @@ public class Homepage extends AppCompatActivity implements
     private Utilities utilities;
     private TextView current_budget, available_balance;
     private Handler handler;
+    private int clickedDrawerItem = 1;
 
     @Override
     protected void onCreate(final Bundle savedInstanceState) {
@@ -155,6 +156,127 @@ public class Homepage extends AppCompatActivity implements
     //endregion
 
     //region Navigation drawer
+//    public void setNavigationDrawer() {
+//        toolbar = (Toolbar) findViewById(R.id.tool_bar);
+//
+//        setSupportActionBar(toolbar);
+//        if (getSupportActionBar() != null) {
+//            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//            getSupportActionBar().setHomeButtonEnabled(true);
+//        }
+//
+//        navigationView = (NavigationView) findViewById(R.id.navigation_view);
+//        navigationView.setNavigationItemSelectedListener
+//                (new NavigationView.OnNavigationItemSelectedListener() {
+//
+//                     @Override
+//                     public boolean onNavigationItemSelected(MenuItem menuItem) {
+//
+//                         drawerLayout.closeDrawers();
+//                         switch (menuItem.getItemId()) {
+//                             case R.id.navigation_item_1:
+//                                 if(clickedDrawerItem == 1)
+//                                     return true;
+//                                 manager = getSupportFragmentManager();
+//                                 if (manager != null) {
+//                                     int backStackEntryCount = manager.getBackStackEntryCount();
+//                                     if (backStackEntryCount > 0) {
+//
+//                                         FragmentManager.BackStackEntry backEntry =
+//                                                 getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1);
+//                                         String backEntryName = backEntry.getName();
+//                                         if (backEntryName.equals(TransactionFragment.TAG)) {
+//                                             new Handler().postDelayed(new Runnable() {
+//                                                 @Override
+//                                                 public void run() {
+//                                                     getSupportFragmentManager().popBackStack();
+//                                                     setDrawer("MinExpense");
+//                                                 }
+//                                             }, 200);
+//
+//                                             return true;
+//                                         }
+//                                     }
+//                                 }
+//                                 return true;
+//
+//                             case R.id.navigation_item_2:
+//                                 manager = getSupportFragmentManager();
+//                                 if (manager != null) {
+//                                     int backStackEntryCount = manager.getBackStackEntryCount();
+//                                     if (backStackEntryCount == 0) {
+//                                         new Handler().postDelayed(new Runnable() {
+//                                             @Override
+//                                             public void run() {
+//                                                 if (findViewById(R.id.fragment_container) != null) {
+//                                                     BudgetFragment budgetFragment = new BudgetFragment();
+//                                                     budgetFragment.setArguments(getIntent().getExtras());
+//
+//                                                     getSupportFragmentManager().beginTransaction()
+//                                                             .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out, R.anim.abc_fade_in, R.anim.abc_fade_out)
+//                                                             .replace(R.id.fragment_container, budgetFragment, BudgetFragment.TAG)
+//                                                             .addToBackStack(BudgetFragment.TAG)
+//                                                             .commit();
+//
+//                                                     setToolbar("SET BUDGET");
+//                                                 }
+//                                             }
+//                                         }, 200);
+//                                     } else if (backStackEntryCount > 0) {
+//                                         FragmentManager.BackStackEntry backEntry =
+//                                                 getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1);
+//                                         String backEntryName = backEntry.getName();
+//                                         if (backEntryName.equals(BudgetFragment.TAG))
+//                                             return true;
+//                                     }
+//                                 }
+//                                 return true;
+//
+//                             case R.id.navigation_item_3:
+//
+//                                 manager = getSupportFragmentManager();
+//                                 if (manager != null) {
+//                                     int backStackEntryCount = manager.getBackStackEntryCount();
+//                                     if (backStackEntryCount == 0) {
+//                                         new Handler().postDelayed(new Runnable() {
+//                                             @Override
+//                                             public void run() {
+//                                                 if (findViewById(R.id.fragment_container) != null) {
+//                                                     TransactionFragment transactionFragment = new TransactionFragment();
+//                                                     transactionFragment.setArguments(getIntent().getExtras());
+//
+//                                                     getSupportFragmentManager().beginTransaction()
+//                                                             .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out, R.anim.abc_fade_in, R.anim.abc_fade_out)
+//                                                             .replace(R.id.fragment_container, transactionFragment, TransactionFragment.TAG)
+//                                                             .addToBackStack(TransactionFragment.TAG)
+//                                                             .commit();
+//
+//                                                     setDrawer("TRANSACTIONS");
+//                                                 }
+//                                             }
+//                                         }, 200);
+//                                     } else if (backStackEntryCount > 0) {
+//                                         FragmentManager.BackStackEntry backEntry =
+//                                                 getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1);
+//                                         String backEntryName = backEntry.getName();
+//                                         if (backEntryName.equals(TransactionFragment.TAG))
+//                                             return true;
+//                                     }
+//                                 }
+//
+//                                 return true;
+//
+//                             default:
+//                                 return true;
+//                         }
+//                     }
+//                 }
+//
+//                );
+//
+//        setDrawer("MinExpense");
+//    }
+
     public void setNavigationDrawer() {
         toolbar = (Toolbar) findViewById(R.id.tool_bar);
 
@@ -174,6 +296,8 @@ public class Homepage extends AppCompatActivity implements
                          drawerLayout.closeDrawers();
                          switch (menuItem.getItemId()) {
                              case R.id.navigation_item_1:
+//                                 if(clickedDrawerItem == 1)
+//                                     return true;
                                  manager = getSupportFragmentManager();
                                  if (manager != null) {
                                      int backStackEntryCount = manager.getBackStackEntryCount();
@@ -182,7 +306,7 @@ public class Homepage extends AppCompatActivity implements
                                          FragmentManager.BackStackEntry backEntry =
                                                  getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1);
                                          String backEntryName = backEntry.getName();
-                                         if (backEntryName.equals(TransactionFragment.TAG)) {
+                                         if (!backEntryName.equals(HomePageFragment.TAG)) {
                                              new Handler().postDelayed(new Runnable() {
                                                  @Override
                                                  public void run() {
