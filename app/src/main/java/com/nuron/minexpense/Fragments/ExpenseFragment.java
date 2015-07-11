@@ -37,7 +37,7 @@ public class ExpenseFragment extends Fragment {
     Utilities utilities;
     saveExpenseListener mListener;
     View rootView;
-
+    //region DatePicker
     DatePickerDialog.OnDateSetListener ondate = new DatePickerDialog.OnDateSetListener() {
         @Override
         public void onDateSet(DatePicker view, int year, int monthOfYear, int dayOfMonth) {
@@ -60,6 +60,14 @@ public class ExpenseFragment extends Fragment {
     };
     private SQLiteDBHelper sqLiteDBHelper;
 
+    public static ExpenseFragment newInstance(String incomeOrExpense) {
+        ExpenseFragment expenseFragment = new ExpenseFragment();
+        Bundle args = new Bundle();
+        args.putString("incomeOrExpense", incomeOrExpense);
+        expenseFragment.setArguments(args);
+        return expenseFragment;
+    }
+
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -75,9 +83,7 @@ public class ExpenseFragment extends Fragment {
                              Bundle savedInstanceState) {
         rootView = inflater.inflate(R.layout.expense_fragment, container, false);
 
-
         sqLiteDBHelper = new SQLiteDBHelper(getActivity());
-
 
         RecyclerView rv = (RecyclerView) rootView.findViewById(R.id.image_list);
         rv.setHasFixedSize(true);
@@ -156,6 +162,7 @@ public class ExpenseFragment extends Fragment {
         date.setCallBack(ondate);
         date.show(getActivity().getSupportFragmentManager(), "Date Picker");
     }
+    //endregion
 
     private List<Integer> addImageId() {
         List<Integer> artImageId;

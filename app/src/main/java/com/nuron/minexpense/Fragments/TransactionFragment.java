@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +20,7 @@ import com.nuron.minexpense.Adapters.TransactionCursorAdaptor;
 import com.nuron.minexpense.ContentProvider.TransactionProvider;
 import com.nuron.minexpense.DBHelper.SQLiteDBHelper;
 import com.nuron.minexpense.R;
+import com.nuron.minexpense.Utilities.Utilities;
 
 import java.math.RoundingMode;
 import java.text.DecimalFormat;
@@ -36,6 +38,17 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
     private TransactionCursorAdaptor transactionCursorAdapter;
     private ListView mListView;
     private Handler handler;
+    private Utilities utilities;
+    private String startDate = "", endDate = "";
+
+    public static TransactionFragment newInstance(String startDate, String endDate) {
+        TransactionFragment transactionFragment = new TransactionFragment();
+        Bundle args = new Bundle();
+        args.putString("startDate", startDate);
+        args.putString("endDate", endDate);
+        transactionFragment.setArguments(args);
+        return transactionFragment;
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -43,6 +56,16 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         rootView = inflater.inflate(R.layout.transactions_fragment, container, false);
 
         handler = new Handler();
+        utilities = new Utilities(getActivity());
+
+        Bundle transactionBundle = getArguments();
+        if (transactionBundle != null) {
+            Log.d("1", "Bundle is not null");
+            startDate = transactionBundle.getString("startDate");
+            endDate = transactionBundle.getString("endDate");
+            Log.d("startDate 1", startDate);
+            Log.d("endDate 1", endDate);
+        }
         return rootView;
     }
 
@@ -60,21 +83,33 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onResume() {
         super.onResume();
+        Log.d("1", "Resume called from fragment");
+        getLoaderManager().restartLoader(0, null, this);
+        getLoaderManager().restartLoader(1, null, this);
     }
 
     //region Loader Implementation
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == 0) {
-            Uri uri = TransactionProvider.CONTENT_URI;
-            return new CursorLoader(getActivity(), uri, null, null, null, null);
-        } else {
-            String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
-                    "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
-            String selection = " 0 == 0 GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
+            Log.d("startDate 2", startDate);
+            Log.d("endDate 2", endDate);
+
+            String selection = SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? ";
+
+            String[] selectionArgs = new String[]{startDate, endDate};
 
             Uri uri = TransactionProvider.CONTENT_URI;
-            return new CursorLoader(getActivity(), uri, projection, selection, null, null);
+            return new CursorLoader(getActivity(), uri, null, selection, selectionArgs, null);
+        } else {
+            String[] selectionArgs = new String[]{startDate, endDate};
+
+            String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
+                    "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
+            String selection = SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? " + " GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
+
+            Uri uri = TransactionProvider.CONTENT_URI;
+            return new CursorLoader(getActivity(), uri, projection, selection, selectionArgs, null);
         }
     }
 

@@ -31,6 +31,7 @@ import com.nuron.minexpense.Fragments.ExpenseFragment;
 import com.nuron.minexpense.Fragments.HomePageFragment;
 import com.nuron.minexpense.Fragments.IncomeFragment;
 import com.nuron.minexpense.Fragments.TransactionFragment;
+import com.nuron.minexpense.Fragments.TransactionParentFragment;
 import com.nuron.minexpense.Utilities.Utilities;
 
 import java.math.RoundingMode;
@@ -363,13 +364,13 @@ public class Homepage extends AppCompatActivity implements
                                              @Override
                                              public void run() {
                                                  if (findViewById(R.id.fragment_container) != null) {
-                                                     TransactionFragment transactionFragment = new TransactionFragment();
-                                                     transactionFragment.setArguments(getIntent().getExtras());
+                                                     TransactionParentFragment transactionParentFragment = new TransactionParentFragment();
+                                                     //TransactionFragment transactionFragment = TransactionFragment.newInstance("2015-07-01 00:00:00","2015-07-30 23:59:59");
 
                                                      getSupportFragmentManager().beginTransaction()
                                                              .setCustomAnimations(R.anim.abc_fade_in, R.anim.abc_fade_out, R.anim.abc_fade_in, R.anim.abc_fade_out)
-                                                             .replace(R.id.fragment_container, transactionFragment, TransactionFragment.TAG)
-                                                             .addToBackStack(TransactionFragment.TAG)
+                                                             .replace(R.id.fragment_container, transactionParentFragment, TransactionParentFragment.TAG)
+                                                             .addToBackStack(TransactionParentFragment.TAG)
                                                              .commit();
 
                                                      setDrawer("TRANSACTIONS");

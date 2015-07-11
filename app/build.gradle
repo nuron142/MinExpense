@@ -29,4 +29,6 @@ dependencies {
     compile 'com.daimajia.swipelayout:library:1.2.0@aar'
     compile 'com.rengwuxian.materialedittext:library:2.1.4'
     compile 'com.android.support:percent:22.2.0'
+    compile 'com.jpardogo.materialtabstrip:library:1.1.0'
+    compile 'io.karim:materialtabs:2.0.2'
 }
