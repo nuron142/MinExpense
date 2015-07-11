@@ -3,7 +3,7 @@ package com.nuron.minexpense.Fragments;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,7 +20,7 @@ public class TransactionParentFragment extends Fragment {
 
     public static final String TAG = "TransactionsFragment";
     View rootView;
-    FragmentPagerAdapter adapterViewPager;
+    FragmentStatePagerAdapter adapterViewPager;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -32,8 +32,6 @@ public class TransactionParentFragment extends Fragment {
         vpPager.setAdapter(adapterViewPager);
         vpPager.setCurrentItem(1, true);
 
-
-        // Bind the tabs to the ViewPager
         MaterialTabs tabs = (MaterialTabs) rootView.findViewById(R.id.tabs);
         tabs.setViewPager(vpPager);
 
@@ -47,7 +45,7 @@ public class TransactionParentFragment extends Fragment {
     }
 
 
-    public static class MyPagerAdapter extends FragmentPagerAdapter {
+    public static class MyPagerAdapter extends FragmentStatePagerAdapter {
         private static int NUM_ITEMS = 3;
 
         public MyPagerAdapter(FragmentManager fragmentManager) {

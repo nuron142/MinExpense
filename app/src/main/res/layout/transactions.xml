@@ -11,6 +11,8 @@
         android:background="?attr/colorPrimary"
         android:textColor="#AAFFFFFF"
         android:textSize="12sp"
+        app:mtIndicatorColor="@android:color/white"
+        app:mtIndicatorHeight="2dp"
         app:mtPaddingMiddle="false"
         app:mtSameWeightTabs="true"
         app:mtTextColorSelected="@android:color/white" />
