@@ -21,7 +21,7 @@ import io.karim.MaterialTabs;
  */
 public class TransactionParentFragment extends Fragment {
 
-    public static final String TAG = "TransactionsFragment";
+    public static final String TAG = "TransactionsParentFragment";
     View rootView;
     FragmentStatePagerAdapter adapterViewPager;
 
@@ -66,27 +66,13 @@ public class TransactionParentFragment extends Fragment {
 
         @Override
         public Fragment getItem(int position) {
-            String[] firstLastDate;
-            firstLastDate = utilities.getFirstAndLastDateFragment(monthPosition[position]);
-//            switch (position) {
-//                case 0:
-//                    firstLastDate  = utilities.getFirstAndLastDateFragment(-1);
-//                    break;
-//                case 1:
-//                    firstLastDate  = utilities.getFirstAndLastDateFragment(0);
-//                    break;
-//                case 2:
-//                    firstLastDate  = utilities.getFirstAndLastDateFragment(1);
-//                    break;
-//                default:
-//                    firstLastDate = new String[]{"1000-06-01 00:00:00","1000-06-30 23:59:59"};
-//            }
+            String[] firstLastDate = utilities.getFirstAndLastDateFragment(monthPosition[position]);
             return TransactionFragment.newInstance(firstLastDate[0], firstLastDate[1]);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return "Page" + position;
+            return "" + position;
         }
 
         @Override
