@@ -12,7 +12,7 @@
         android:textColor="#AAFFFFFF"
         android:textSize="12sp"
         app:mtIndicatorColor="@android:color/white"
-        app:mtIndicatorHeight="2dp"
+        app:mtIndicatorHeight="2.5dp"
         app:mtPaddingMiddle="false"
         app:mtSameWeightTabs="true"
         app:mtTextColorSelected="@android:color/white" />

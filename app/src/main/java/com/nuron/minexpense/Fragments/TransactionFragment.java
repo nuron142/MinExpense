@@ -60,11 +60,8 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
 
         Bundle transactionBundle = getArguments();
         if (transactionBundle != null) {
-            Log.d("1", "Bundle is not null");
             startDate = transactionBundle.getString("startDate");
             endDate = transactionBundle.getString("endDate");
-            Log.d("startDate 1", startDate);
-            Log.d("endDate 1", endDate);
         }
         return rootView;
     }
@@ -83,7 +80,6 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onResume() {
         super.onResume();
-        Log.d("1", "Resume called from fragment");
         getLoaderManager().restartLoader(0, null, this);
         getLoaderManager().restartLoader(1, null, this);
     }

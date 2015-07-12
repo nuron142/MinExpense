@@ -271,4 +271,33 @@ public class Utilities {
         }
         return null;
     }
+
+
+    public String[] getFirstAndLastDateFragment(int position) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, position);
+
+        calendar.set(Calendar.DATE, 1);
+        Date firstDate = calendar.getTime();
+        calendar.set(Calendar.DATE, calendar.getActualMaximum(Calendar.DATE));
+        Date lastDate = calendar.getTime();
+
+        DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        String monthStart = dateFormat.format(firstDate) + " 00:00:00";
+        String monthEnd = dateFormat.format(lastDate) + " 23:59:59";
+        return new String[]{monthStart, monthEnd};
+    }
+
+    public String[] getMonthAndYear(int position) {
+        SimpleDateFormat monthFormat = new SimpleDateFormat("MMMM");
+        SimpleDateFormat yearFormat = new SimpleDateFormat("yyyy");
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.MONTH, position);
+        Date date = calendar.getTime();
+
+        String month = monthFormat.format(date);
+        String year = yearFormat.format(date);
+        return new String[]{month, year};
+    }
 }
