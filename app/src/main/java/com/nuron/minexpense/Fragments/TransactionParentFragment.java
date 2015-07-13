@@ -45,6 +45,7 @@ public class TransactionParentFragment extends Fragment {
     @Override
     public void onResume() {
         super.onResume();
+        //adapterViewPager.notifyDataSetChanged();
     }
 
 
@@ -89,6 +90,11 @@ public class TransactionParentFragment extends Fragment {
 
             return rootView;
         }
+
+//        @Override
+//        public int getItemPosition(Object object) {
+//            return POSITION_NONE;
+//        }
 
     }
 }

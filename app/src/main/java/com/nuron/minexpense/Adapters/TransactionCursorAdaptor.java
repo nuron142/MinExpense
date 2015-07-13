@@ -91,11 +91,8 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
 
+
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
-        final SwipeLayout swipeLayout = (SwipeLayout)view.findViewById(getSwipeLayoutResourceId(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID)));
-        swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
-        swipeLayout.addDrag(SwipeLayout.DragEdge.Left, view.findViewById(R.id.bottom_layer1));
-        swipeLayout.addDrag(SwipeLayout.DragEdge.Right, view.findViewById(R.id.bottom_layer));
 
         final Transaction transaction = sqLiteDBHelper.getTransactionfromCursor(cursor);
 
@@ -118,86 +115,86 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         final String incomeOrExpense = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
         final Uri uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + position);
 
-        Button delete  = (Button) view.findViewById(R.id.delte_transaction);
-        delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
 
-                context.getContentResolver().delete(uri, null, null);
-            }
-        });
+        if ((int) view.getTag() == TYPE_EXPENSE || (int) view.getTag() == TYPE_INCOME) {
+            final SwipeLayout swipeLayout = (SwipeLayout) view.findViewById(getSwipeLayoutResourceId(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID)));
+            swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
+            swipeLayout.addDrag(SwipeLayout.DragEdge.Left, view.findViewById(R.id.bottom_layer1));
+            swipeLayout.addDrag(SwipeLayout.DragEdge.Right, view.findViewById(R.id.bottom_layer));
 
-        Button edit  = (Button) view.findViewById(R.id.edit_transaction);
-        edit.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+            Button delete = (Button) view.findViewById(R.id.delte_transaction);
+            delete.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
 
-                if (incomeOrExpense.equals("0")) {
-                    //Intent intent = new Intent("com.nuron.minexpense.ADD_INCOME");
-
-                    Bundle transactionBundle = new Bundle();
-                    transactionBundle.putString("position", position);
-                    transactionBundle.putString("name", transaction.getName());
-                    transactionBundle.putString("amount", transaction.getAmount());
-                    transactionBundle.putString("category", transaction.getCategory());
-                    transactionBundle.putString("artId", transaction.getArtId());
-                    transactionBundle.putString("date", transaction.getTime());
-                    transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
-
-//                    intent.putExtras(transactionBundle);
-//                    v.getContext().startActivity(intent);
-
-                    IncomeFragment incomeFragment = new IncomeFragment();
-                    incomeFragment.setArguments(transactionBundle);
-
-                    FragmentTransaction fragmentTransaction =
-                            ((FragmentActivity) v.getContext())
-                                    .getSupportFragmentManager()
-                                    .beginTransaction();
-
-                    fragmentTransaction.replace(R.id.fragment_container, incomeFragment);
-                    fragmentTransaction.addToBackStack(null);
-
-                    fragmentTransaction.commit();
-
-                    ((Homepage) v.getContext()).setToolbar("EDIT INCOME");
-
-
-                } else {
-                    //Intent intent = new Intent("com.nuron.minexpense.ADD_EXPENSE");
-
-                    Bundle transactionBundle = new Bundle();
-                    transactionBundle.putString("position", position);
-                    transactionBundle.putString("name", transaction.getName());
-                    transactionBundle.putString("amount", transaction.getAmount());
-                    transactionBundle.putString("category", transaction.getCategory());
-                    transactionBundle.putString("artId", transaction.getArtId());
-                    transactionBundle.putString("date", transaction.getTime());
-                    transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
-
-//                    intent.putExtras(transactionBundle);
-//                    v.getContext().startActivity(intent);
-
-                    ExpenseFragment expenseFragment = new ExpenseFragment();
-                    expenseFragment.setArguments(transactionBundle);
-
-                    FragmentTransaction fragmentTransaction =
-                            ((FragmentActivity) v.getContext())
-                                    .getSupportFragmentManager()
-                                    .beginTransaction();
-
-                    fragmentTransaction.replace(R.id.fragment_container, expenseFragment);
-                    fragmentTransaction.addToBackStack(null);
-
-                    fragmentTransaction.commit();
-
-                    ((Homepage) v.getContext()).setToolbar("EDIT EXPENSE");
+                    context.getContentResolver().delete(uri, null, null);
                 }
-                swipeLayout.close();
-            }
-        });
+            });
 
-       swipeLayout.close();
+            Button edit = (Button) view.findViewById(R.id.edit_transaction);
+            edit.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+
+                    if (incomeOrExpense.equals("0")) {
+
+                        Bundle transactionBundle = new Bundle();
+                        transactionBundle.putString("position", position);
+                        transactionBundle.putString("name", transaction.getName());
+                        transactionBundle.putString("amount", transaction.getAmount());
+                        transactionBundle.putString("category", transaction.getCategory());
+                        transactionBundle.putString("artId", transaction.getArtId());
+                        transactionBundle.putString("date", transaction.getTime());
+                        transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
+
+                        IncomeFragment incomeFragment = new IncomeFragment();
+                        incomeFragment.setArguments(transactionBundle);
+
+                        FragmentTransaction fragmentTransaction =
+                                ((FragmentActivity) v.getContext())
+                                        .getSupportFragmentManager()
+                                        .beginTransaction();
+
+                        fragmentTransaction.replace(R.id.fragment_container, incomeFragment);
+                        fragmentTransaction.addToBackStack(null);
+
+                        fragmentTransaction.commit();
+
+                        ((Homepage) v.getContext()).setToolbar("EDIT INCOME");
+
+
+                    } else {
+
+                        Bundle transactionBundle = new Bundle();
+                        transactionBundle.putString("position", position);
+                        transactionBundle.putString("name", transaction.getName());
+                        transactionBundle.putString("amount", transaction.getAmount());
+                        transactionBundle.putString("category", transaction.getCategory());
+                        transactionBundle.putString("artId", transaction.getArtId());
+                        transactionBundle.putString("date", transaction.getTime());
+                        transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
+
+                        ExpenseFragment expenseFragment = new ExpenseFragment();
+                        expenseFragment.setArguments(transactionBundle);
+
+                        FragmentTransaction fragmentTransaction =
+                                ((FragmentActivity) v.getContext())
+                                        .getSupportFragmentManager()
+                                        .beginTransaction();
+
+                        fragmentTransaction.replace(R.id.fragment_container, expenseFragment);
+                        fragmentTransaction.addToBackStack(null);
+
+                        fragmentTransaction.commit();
+
+                        ((Homepage) v.getContext()).setToolbar("EDIT EXPENSE");
+                    }
+                    swipeLayout.close();
+                }
+            });
+
+            swipeLayout.close();
+        }
 
     }
 

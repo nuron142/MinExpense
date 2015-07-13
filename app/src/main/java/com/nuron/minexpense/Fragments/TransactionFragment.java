@@ -8,6 +8,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,7 +34,7 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
 
     public static final String TAG = "TransactionsFragment";
     double incomeCurrent = 0, expenseCurrent = 0;
-    View rootView;
+    View rootView, headerView = null;
     private TransactionCursorAdaptor transactionCursorAdapter;
     private ListView mListView;
     private Handler handler;
@@ -73,6 +74,8 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         getLoaderManager().initLoader(2, null, this);
 
         mListView = (ListView) rootView.findViewById(R.id.list);
+        headerView = getActivity().getLayoutInflater().inflate(R.layout.transaction_header, mListView, false);
+        mListView.addHeaderView(headerView);
         transactionCursorAdapter = new TransactionCursorAdaptor(getActivity(), null);
         mListView.setAdapter(transactionCursorAdapter);
     }
@@ -119,15 +122,29 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (loader.getId() == 0) {
             transactionCursorAdapter.swapCursor(cursor);
+            // mListView.setVisibility((transactionCursorAdapter.isEmpty()) ? View.GONE : View.VISIBLE);
+            if (transactionCursorAdapter.isEmpty())
+                mListView.setVisibility(View.GONE);
+            else {
+                mListView.setVisibility(View.VISIBLE);
+                headerView.setVisibility(View.VISIBLE);
+            }
+
         } else if (loader.getId() == 1) {
-            getIncomeAndExpense(cursor);
-        } else {
             final Cursor cursor1 = cursor;
             handler.post(new Runnable() {
                 public void run() {
-                    updateSum(cursor1);
+                    getIncomeAndExpense(cursor1);
                 }
             });
+        } else {
+            final Cursor cursor1 = cursor;
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    updateSum(cursor1);
+                }
+            }, 10);
         }
     }
 
@@ -158,6 +175,9 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
 
         incomeCurrent = Double.parseDouble(transactionSumBundle.getString("income_sum"));
         expenseCurrent = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
+
+        Log.d("handler 1", String.valueOf(incomeCurrent) + " " + startDate);
+        Log.d("handler 1", String.valueOf(expenseCurrent) + " " + startDate);
     }
 
     public void updateSum(Cursor cursor) {
@@ -181,19 +201,24 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         double incomePrevious = Double.parseDouble(transactionSumBundle.getString("income_sum"));
         double expensePrevious = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
 
+        Log.d("handler 2", String.valueOf(incomeCurrent) + " " + startDate);
+        Log.d("handler 2", String.valueOf(expenseCurrent) + " " + startDate);
+
         double savedPrevious = incomePrevious - expensePrevious;
 
         DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         formatter.setRoundingMode(RoundingMode.HALF_UP);
 
-        TextView incomeText = (TextView) rootView.findViewById(R.id.income_text);
-        incomeText.setText(formatter.format(incomeCurrent));
+        if (headerView != null) {
+            TextView income_header = (TextView) headerView.findViewById(R.id.list_header_income);
+            income_header.setText("₹ " + formatter.format(incomeCurrent));
 
-        TextView expenseText = (TextView) rootView.findViewById(R.id.expense_text);
-        expenseText.setText(formatter.format(expenseCurrent));
+            TextView expense_header = (TextView) headerView.findViewById(R.id.list_header_expense);
+            expense_header.setText("₹ " + formatter.format(expenseCurrent));
+        }
 
-        TextView savedPreviousText = (TextView) rootView.findViewById(R.id.saved_previous_text);
-        savedPreviousText.setText(formatter.format(savedPrevious));
+//        TextView savedPreviousText = (TextView) rootView.findViewById(R.id.saved_previous_text);
+//        savedPreviousText.setText(formatter.format(savedPrevious));
 
         double incomeTotal = savedPrevious + incomeCurrent;
         TextView incomeTotalProgressBarText = (TextView) rootView.findViewById(R.id.income_progressbar_text);

@@ -36,7 +36,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
     public static final String TAG = "MinExpenseFragment";
     AddExpenseClickListener mListener;
-    View rootView;
+    View rootView, headerView = null;
     double monthlyExpenseTillYesterday = 0;
     private TransactionCursorAdaptor transactionCursorAdapter;
     private ListView mListView;
@@ -87,7 +87,10 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         getLoaderManager().initLoader(1, null, this);
         getLoaderManager().initLoader(2, null, this);
 
+
         mListView = (ListView) rootView.findViewById(R.id.list);
+        headerView = getActivity().getLayoutInflater().inflate(R.layout.transaction_header, mListView, false);
+        mListView.addHeaderView(headerView);
         transactionCursorAdapter = new TransactionCursorAdaptor(getActivity(), null);
         mListView.setAdapter(transactionCursorAdapter);
 
@@ -142,7 +145,14 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (loader.getId() == 0) {
             transactionCursorAdapter.swapCursor(cursor);
-            mListView.setVisibility((transactionCursorAdapter.isEmpty()) ? View.GONE : View.VISIBLE);
+            // mListView.setVisibility((transactionCursorAdapter.isEmpty()) ? View.GONE : View.VISIBLE);
+            if (transactionCursorAdapter.isEmpty())
+                mListView.setVisibility(View.GONE);
+            else {
+                mListView.setVisibility(View.VISIBLE);
+                headerView.setVisibility(View.VISIBLE);
+            }
+
         } else if (loader.getId() == 1) {
             final Cursor cursor1 = cursor;
             handler.post(new Runnable() {
@@ -207,16 +217,20 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
             }
         }
 
-        //double income_sum = Double.parseDouble(transactionSumBundle.getString("income_sum"));
+        double income_sum = Double.parseDouble(transactionSumBundle.getString("income_sum"));
         double expense_sum = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
-
 
         DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         formatter.setRoundingMode(RoundingMode.HALF_UP);
 
-//        TextView incomeText = (TextView) rootView.findViewById(R.id.income_sum);
-//        incomeText.setText(formatter.format(income_sum));
-//
+        if (headerView != null) {
+            TextView income_header = (TextView) headerView.findViewById(R.id.list_header_income);
+            income_header.setText("₹ " + formatter.format(income_sum));
+
+            TextView expense_header = (TextView) headerView.findViewById(R.id.list_header_expense);
+            expense_header.setText("₹ " + formatter.format(expense_sum));
+        }
+
         TextView today_expense = (TextView) rootView.findViewById(R.id.today_expense);
         today_expense.setText("₹ " + formatter.format(expense_sum));
 
