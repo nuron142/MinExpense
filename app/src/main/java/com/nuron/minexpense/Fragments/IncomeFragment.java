@@ -160,12 +160,15 @@ public class IncomeFragment extends Fragment {
     private List<Integer> addImageId() {
         List<Integer> artImageId;
         artImageId = new ArrayList<>();
+
+        artImageId.add(R.drawable.batman);
         artImageId.add(R.drawable.star);
-        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.batman);
         artImageId.add(R.drawable.trash);
         artImageId.add(R.drawable.star);
-        artImageId.add(R.drawable.star);
+        artImageId.add(R.drawable.batman);
         artImageId.add(R.drawable.trash);
+
         return artImageId;
     }
 

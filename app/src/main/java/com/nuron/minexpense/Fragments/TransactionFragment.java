@@ -8,7 +8,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -175,9 +174,6 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
 
         incomeCurrent = Double.parseDouble(transactionSumBundle.getString("income_sum"));
         expenseCurrent = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
-
-        Log.d("handler 1", String.valueOf(incomeCurrent) + " " + startDate);
-        Log.d("handler 1", String.valueOf(expenseCurrent) + " " + startDate);
     }
 
     public void updateSum(Cursor cursor) {
@@ -200,9 +196,6 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
 
         double incomePrevious = Double.parseDouble(transactionSumBundle.getString("income_sum"));
         double expensePrevious = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
-
-        Log.d("handler 2", String.valueOf(incomeCurrent) + " " + startDate);
-        Log.d("handler 2", String.valueOf(expenseCurrent) + " " + startDate);
 
         double savedPrevious = incomePrevious - expensePrevious;
 
