@@ -43,6 +43,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     private Handler handler;
     private Utilities utilities;
 
+    //region Fragment overide functions
     @Override
     public void onAttach(Activity activity) {
         super.onAttach(activity);
@@ -97,6 +98,17 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     }
 
     @Override
+    public void onResume() {
+        super.onResume();
+        getLoaderManager().restartLoader(0, null, this);
+        getLoaderManager().restartLoader(1, null, this);
+        getLoaderManager().restartLoader(2, null, this);
+    }
+
+    //endregion
+
+    //region Loader Implementation
+    @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
         if (id == 0) {
             String[] today = utilities.getFirstAndLastDate(Utilities.TODAY_DATE);
@@ -144,8 +156,7 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (loader.getId() == 0) {
-            transactionCursorAdapter.swapCursor(cursor);
-            // mListView.setVisibility((transactionCursorAdapter.isEmpty()) ? View.GONE : View.VISIBLE);
+            transactionCursorAdapter.changeCursor(cursor);
             if (transactionCursorAdapter.isEmpty())
                 mListView.setVisibility(View.GONE);
             else {
@@ -175,14 +186,8 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         if (loader.getId() == 0)
             transactionCursorAdapter.swapCursor(null);
     }
+    //endregion
 
-    @Override
-    public void onResume() {
-        super.onResume();
-        getLoaderManager().restartLoader(0, null, this);
-        getLoaderManager().restartLoader(1, null, this);
-        getLoaderManager().restartLoader(2, null, this);
-    }
 
     public void updateTodayExpenseMax(Cursor cursor) {
         double monthlyExpense_text;

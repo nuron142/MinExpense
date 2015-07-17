@@ -15,5 +15,6 @@
     <string name="Today_Expense_Max">TODAY_EXPENSE_MAX</string>
     <string name="Available_Balance">AVAILABLE_BALANCE</string>
     <string name="Monthly_Expense_Total">MONTHLY_EXPENSE_TOTAL</string>
+    <string name="Use_Random_Max_Expense">USE_RANDOM_MAX_EXPENSE</string>
 
 </resources>

@@ -31,6 +31,8 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
 
     private static final int TYPE_INCOME = 0;
     private static final int TYPE_EXPENSE = 1;
+    private static final int TYPE_EXPENSE_HEADER = 2;
+    private static final int TYPE_INCOME_HEADER = 3;
     Utilities utilities;
 
 
@@ -51,50 +53,91 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
     @Override
     public int getItemViewType(int position) {
         Cursor cursor = (Cursor)getItem(position);
-        return getItemViewType(cursor);
-    }
+        String messageType = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
 
-
-    private int getItemViewType(Cursor cursor){
-        String type = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
-        switch (type) {
-            case "0":
-                return Utilities.TYPE_INCOME;
-            case "1":
-                return Utilities.TYPE_EXPENSE;
-            default:
-                return -1;
+        if (position == 0) {
+            if (messageType.equals("0"))
+                return TYPE_INCOME_HEADER;
+            else
+                return TYPE_EXPENSE_HEADER;
+        } else {
+            if (isNewGroup(cursor, position)) {
+                if (messageType.equals("0"))
+                    return TYPE_INCOME_HEADER;
+                else
+                    return TYPE_EXPENSE_HEADER;
+            } else {
+                if (messageType.equals("0"))
+                    return TYPE_INCOME;
+                else
+                    return TYPE_EXPENSE;
+            }
         }
     }
 
     @Override
     public int getViewTypeCount() {
-        return 2;
+        return 4;
     }
 
     @Override
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
-
-        String messageType = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
+        int viewType;
         View view;
         LayoutInflater inflater = (LayoutInflater)context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-        if(messageType.equals("0")){
-            view = inflater.inflate(R.layout.income_list, null);
-            view.setTag(TYPE_INCOME);
-        }else{
-            view = inflater.inflate(R.layout.expense_list, null);
-            view.setTag(TYPE_EXPENSE);
+        int position = cursor.getPosition();
+        String transactionType = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
+
+        if (position == 0) {
+            if (transactionType.equals("0"))
+                viewType = TYPE_INCOME_HEADER;
+            else
+                viewType = TYPE_EXPENSE_HEADER;
+        } else {
+            if (isNewGroup(cursor, position)) {
+                if (transactionType.equals("0"))
+                    viewType = TYPE_INCOME_HEADER;
+                else
+                    viewType = TYPE_EXPENSE_HEADER;
+            } else {
+                if (transactionType.equals("0"))
+                    viewType = TYPE_INCOME;
+                else
+                    viewType = TYPE_EXPENSE;
+            }
         }
+
+        switch (viewType) {
+            case TYPE_INCOME:
+                view = inflater.inflate(R.layout.income_list, null);
+                break;
+
+            case TYPE_EXPENSE:
+                view = inflater.inflate(R.layout.expense_list, null);
+                break;
+
+            case TYPE_INCOME_HEADER:
+                view = inflater.inflate(R.layout.income_list_group_header, null);
+                break;
+
+            //TYPE_EXPENSE_HEADER
+            default:
+                view = inflater.inflate(R.layout.expense_list_group_header, null);
+                break;
+        }
+
         return view;
     }
 
     @Override
     public void bindView(View view, final Context context, Cursor cursor) {
-
-
         SQLiteDBHelper sqLiteDBHelper = new SQLiteDBHelper(context);
 
         final Transaction transaction = sqLiteDBHelper.getTransactionfromCursor(cursor);
+
+        TextView dateHeaderText = (TextView) view.findViewById(R.id.date_header);
+        if (dateHeaderText != null)
+            dateHeaderText.setText(utilities.getDateFormat(transaction.getTime(), Utilities.FROM_DB_TO_LIST_VIEW));
 
         TextView nameText = (TextView)view.findViewById(R.id.name);
         nameText.setText(transaction.getName());
@@ -102,8 +145,8 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         TextView amountText = (TextView)view.findViewById(R.id.amount);
         amountText.setText(transaction.getAmount());
 
-        TextView dateText = (TextView)view.findViewById(R.id.date);
-        dateText.setText(utilities.getDateFormat(transaction.getTime(), Utilities.FROM_DB_TO_LIST_VIEW));
+//        TextView dateText = (TextView)view.findViewById(R.id.date);
+//        dateText.setText(utilities.getDateFormat(transaction.getTime(), Utilities.FROM_DB_TO_LIST_VIEW));
 
         TextView categoryText = (TextView)view.findViewById(R.id.category);
         categoryText.setText(transaction.getCategory());
@@ -115,86 +158,83 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
         final String incomeOrExpense = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE));
         final Uri uri = Uri.parse(TransactionProvider.CONTENT_URI + "/" + position);
 
+        final SwipeLayout swipeLayout = (SwipeLayout) view.findViewById(getSwipeLayoutResourceId(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID)));
+        swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
+        swipeLayout.addDrag(SwipeLayout.DragEdge.Left, view.findViewById(R.id.bottom_layer1));
+        swipeLayout.addDrag(SwipeLayout.DragEdge.Right, view.findViewById(R.id.bottom_layer));
 
-        if ((int) view.getTag() == TYPE_EXPENSE || (int) view.getTag() == TYPE_INCOME) {
-            final SwipeLayout swipeLayout = (SwipeLayout) view.findViewById(getSwipeLayoutResourceId(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_ID)));
-            swipeLayout.setShowMode(SwipeLayout.ShowMode.PullOut);
-            swipeLayout.addDrag(SwipeLayout.DragEdge.Left, view.findViewById(R.id.bottom_layer1));
-            swipeLayout.addDrag(SwipeLayout.DragEdge.Right, view.findViewById(R.id.bottom_layer));
+        Button delete = (Button) view.findViewById(R.id.delte_transaction);
+        delete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
 
-            Button delete = (Button) view.findViewById(R.id.delte_transaction);
-            delete.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+                context.getContentResolver().delete(uri, null, null);
+            }
+        });
 
-                    context.getContentResolver().delete(uri, null, null);
+        Button edit = (Button) view.findViewById(R.id.edit_transaction);
+        edit.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                if (incomeOrExpense.equals("0")) {
+
+                    Bundle transactionBundle = new Bundle();
+                    transactionBundle.putString("position", position);
+                    transactionBundle.putString("name", transaction.getName());
+                    transactionBundle.putString("amount", transaction.getAmount());
+                    transactionBundle.putString("category", transaction.getCategory());
+                    transactionBundle.putString("artId", transaction.getArtId());
+                    transactionBundle.putString("date", transaction.getTime());
+                    transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
+
+                    IncomeFragment incomeFragment = new IncomeFragment();
+                    incomeFragment.setArguments(transactionBundle);
+
+                    FragmentTransaction fragmentTransaction =
+                            ((FragmentActivity) v.getContext())
+                                    .getSupportFragmentManager()
+                                    .beginTransaction();
+
+                    fragmentTransaction.replace(R.id.fragment_container, incomeFragment);
+                    fragmentTransaction.addToBackStack(null);
+
+                    fragmentTransaction.commit();
+
+                    ((Homepage) v.getContext()).setToolbar("EDIT INCOME");
+
+
+                } else {
+
+                    Bundle transactionBundle = new Bundle();
+                    transactionBundle.putString("position", position);
+                    transactionBundle.putString("name", transaction.getName());
+                    transactionBundle.putString("amount", transaction.getAmount());
+                    transactionBundle.putString("category", transaction.getCategory());
+                    transactionBundle.putString("artId", transaction.getArtId());
+                    transactionBundle.putString("date", transaction.getTime());
+                    transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
+
+                    ExpenseFragment expenseFragment = new ExpenseFragment();
+                    expenseFragment.setArguments(transactionBundle);
+
+                    FragmentTransaction fragmentTransaction =
+                            ((FragmentActivity) v.getContext())
+                                    .getSupportFragmentManager()
+                                    .beginTransaction();
+
+                    fragmentTransaction.replace(R.id.fragment_container, expenseFragment);
+                    fragmentTransaction.addToBackStack(null);
+
+                    fragmentTransaction.commit();
+
+                    ((Homepage) v.getContext()).setToolbar("EDIT EXPENSE");
                 }
-            });
+                swipeLayout.close();
+            }
+        });
 
-            Button edit = (Button) view.findViewById(R.id.edit_transaction);
-            edit.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
-
-                    if (incomeOrExpense.equals("0")) {
-
-                        Bundle transactionBundle = new Bundle();
-                        transactionBundle.putString("position", position);
-                        transactionBundle.putString("name", transaction.getName());
-                        transactionBundle.putString("amount", transaction.getAmount());
-                        transactionBundle.putString("category", transaction.getCategory());
-                        transactionBundle.putString("artId", transaction.getArtId());
-                        transactionBundle.putString("date", transaction.getTime());
-                        transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
-
-                        IncomeFragment incomeFragment = new IncomeFragment();
-                        incomeFragment.setArguments(transactionBundle);
-
-                        FragmentTransaction fragmentTransaction =
-                                ((FragmentActivity) v.getContext())
-                                        .getSupportFragmentManager()
-                                        .beginTransaction();
-
-                        fragmentTransaction.replace(R.id.fragment_container, incomeFragment);
-                        fragmentTransaction.addToBackStack(null);
-
-                        fragmentTransaction.commit();
-
-                        ((Homepage) v.getContext()).setToolbar("EDIT INCOME");
-
-
-                    } else {
-
-                        Bundle transactionBundle = new Bundle();
-                        transactionBundle.putString("position", position);
-                        transactionBundle.putString("name", transaction.getName());
-                        transactionBundle.putString("amount", transaction.getAmount());
-                        transactionBundle.putString("category", transaction.getCategory());
-                        transactionBundle.putString("artId", transaction.getArtId());
-                        transactionBundle.putString("date", transaction.getTime());
-                        transactionBundle.putString("incomeOrExpense", transaction.getIncomeOrExpense());
-
-                        ExpenseFragment expenseFragment = new ExpenseFragment();
-                        expenseFragment.setArguments(transactionBundle);
-
-                        FragmentTransaction fragmentTransaction =
-                                ((FragmentActivity) v.getContext())
-                                        .getSupportFragmentManager()
-                                        .beginTransaction();
-
-                        fragmentTransaction.replace(R.id.fragment_container, expenseFragment);
-                        fragmentTransaction.addToBackStack(null);
-
-                        fragmentTransaction.commit();
-
-                        ((Homepage) v.getContext()).setToolbar("EDIT EXPENSE");
-                    }
-                    swipeLayout.close();
-                }
-            });
-
-            swipeLayout.close();
-        }
+        swipeLayout.close();
 
     }
 
@@ -220,6 +260,17 @@ public class TransactionCursorAdaptor extends CursorSwipeAdapter {
                 return R.drawable.batman;
         }
     }
+
+    private boolean isNewGroup(Cursor cursor, int position) {
+        String currentDate = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_TIME));
+
+        cursor.moveToPosition(position - 1);
+        String previousDate = cursor.getString(cursor.getColumnIndex(SQLiteDBHelper.TRANSACTION_TIME));
+
+        cursor.moveToPosition(position);
+        return !currentDate.equals(previousDate);
+    }
+
 }
 
 

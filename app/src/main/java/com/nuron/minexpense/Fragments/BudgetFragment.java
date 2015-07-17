@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
 
@@ -22,7 +23,7 @@ import java.util.Date;
 import java.util.Locale;
 
 /**
- * Created by Nuron on 05-Jul-15.
+ * Created by Sunil on 05-Jul-15.
  */
 public class BudgetFragment extends Fragment {
     public static final String TAG = "BudgetFragment";
@@ -66,7 +67,18 @@ public class BudgetFragment extends Fragment {
         DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         formatter.setRoundingMode(RoundingMode.HALF_UP);
 
-        double newBudget = Double.parseDouble(set_budget.getText().toString());
+        CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.checkBoxRandom);
+        if (checkBox.isChecked())
+            utilities.writeToSharedPref(R.string.Use_Random_Max_Expense, "1");
+        else
+            utilities.writeToSharedPref(R.string.Use_Random_Max_Expense, "0");
+
+        double newBudget;
+        if (set_budget.getText().toString().equals(""))
+            newBudget = Double.parseDouble(utilities.readFromSharedPref(R.string.Budget_value));
+        else
+            newBudget = Double.parseDouble(set_budget.getText().toString());
+
         utilities.writeToSharedPref(R.string.Budget_value, formatter.format(newBudget));
         getActivity().getContentResolver().notifyChange(TransactionProvider.CONTENT_URI, null);
 
@@ -85,7 +97,14 @@ public class BudgetFragment extends Fragment {
 
         String currentBudget = utilities.readFromSharedPref(R.string.Budget_value);
         TextView current_budget_text = (TextView) rootView.findViewById(R.id.current_budget_drawer);
-        current_budget_text.setText("Rs " + currentBudget);
+        current_budget_text.setText("₹ " + currentBudget);
+
+        CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.checkBoxRandom);
+        String useRandomMaxExpense = utilities.readFromSharedPref(R.string.Use_Random_Max_Expense);
+        if (useRandomMaxExpense.equals("0"))
+            checkBox.setChecked(false);
+        else
+            checkBox.setChecked(true);
     }
 
     public interface saveBudgetListener {

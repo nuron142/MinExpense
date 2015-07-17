@@ -82,6 +82,11 @@ public class Utilities {
     {
         double dayWeight;
 
+        String useRandomMaxExpense = readFromSharedPref(R.string.Use_Random_Max_Expense);
+        if (useRandomMaxExpense.equals("0"))
+            return 1.0;
+
+
         List<Double> dayWeightList1 = new ArrayList<>();
         dayWeightList1.add(0.75); // Monday
         dayWeightList1.add(0.65);

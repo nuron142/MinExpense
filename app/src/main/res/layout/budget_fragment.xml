@@ -82,7 +82,7 @@
                     android:layout_marginEnd="24dp"
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
-                    android:text="Rs 900"
+                    android:text="₹ 900"
                     android:textColor="@android:color/white"
                     android:textSize="20sp" />
 
@@ -107,29 +107,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!--<android.support.design.widget.TextInputLayout-->
-            <!--android:id="@+id/budget_text"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:layout_gravity="center"-->
-            <!--android:layout_marginLeft="24dp"-->
-            <!--android:layout_marginRight="24dp"-->
-            <!--android:gravity="center"-->
-            <!--android:layout_centerInParent="true">-->
-
-            <!--<EditText-->
-            <!--android:id="@+id/set_budget_text"-->
-            <!--android:layout_width="match_parent"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:hint="Amount"-->
-            <!--android:gravity="center"-->
-            <!--android:imeOptions="actionDone"-->
-            <!--android:singleLine="true"-->
-            <!--android:layout_alignParentBottom="true"-->
-            <!--android:layout_alignStart="@+id/year_text"-->
-            <!--android:layout_alignEnd="@+id/year_text" />-->
-
-            <!--</android.support.design.widget.TextInputLayout>-->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -150,25 +127,18 @@
                 android:gravity="center"
                 android:imeOptions="actionDone"
                 android:singleLine="true"
-                android:textSize="30sp" />
+                android:textSize="28sp" />
 
             <CheckBox
-                android:id="@+id/checkBox"
+                android:id="@+id/checkBoxRandom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/set_budget_text"
                 android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
-                android:checked="false"
+                android:checked="true"
                 android:text="Use random max expense" />
 
-            <!--<TextView-->
-            <!--android:layout_width="wrap_content"-->
-            <!--android:layout_height="wrap_content"-->
-            <!--android:text="New Budget"-->
-            <!--android:textSize="20sp"-->
-            <!--android:layout_below="@+id/set_budget_text"-->
-            <!--android:layout_centerHorizontal="true" />-->
         </RelativeLayout>
     </LinearLayout>
 

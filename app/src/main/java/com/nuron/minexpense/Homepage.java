@@ -293,7 +293,6 @@ public class Homepage extends AppCompatActivity implements
 
                      @Override
                      public boolean onNavigationItemSelected(MenuItem menuItem) {
-
                          drawerLayout.closeDrawers();
                          switch (menuItem.getItemId()) {
                              case R.id.navigation_item_1:
@@ -376,7 +375,7 @@ public class Homepage extends AppCompatActivity implements
                                                      setDrawer("TRANSACTIONS");
                                                  }
                                              }
-                                         }, 200);
+                                         }, 240);
                                      } else if (backStackEntryCount > 0) {
                                          FragmentManager.BackStackEntry backEntry =
                                                  getSupportFragmentManager().getBackStackEntryAt(getSupportFragmentManager().getBackStackEntryCount() - 1);
@@ -385,7 +384,6 @@ public class Homepage extends AppCompatActivity implements
                                              return true;
                                      }
                                  }
-
                                  return true;
 
                              default:

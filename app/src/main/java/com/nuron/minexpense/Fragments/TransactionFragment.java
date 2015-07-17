@@ -49,6 +49,8 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         return transactionFragment;
     }
 
+
+    //region Fragment overide functions
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -86,6 +88,7 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         getLoaderManager().restartLoader(1, null, this);
         getLoaderManager().restartLoader(2, null, this);
     }
+    //endregion
 
     //region Loader Implementation
     @Override
@@ -95,8 +98,10 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
 
             String[] selectionArgs = new String[]{startDate, endDate};
 
+            String sortOrder = SQLiteDBHelper.TRANSACTION_TIME + " DESC";
+
             Uri uri = TransactionProvider.CONTENT_URI;
-            return new CursorLoader(getActivity(), uri, null, selection, selectionArgs, null);
+            return new CursorLoader(getActivity(), uri, null, selection, selectionArgs, sortOrder);
         } else if (id == 1) {
             String[] selectionArgs = new String[]{startDate, endDate};
 
@@ -120,8 +125,7 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
     @Override
     public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
         if (loader.getId() == 0) {
-            transactionCursorAdapter.swapCursor(cursor);
-            // mListView.setVisibility((transactionCursorAdapter.isEmpty()) ? View.GONE : View.VISIBLE);
+            transactionCursorAdapter.changeCursor(cursor);
             if (transactionCursorAdapter.isEmpty())
                 mListView.setVisibility(View.GONE);
             else {
