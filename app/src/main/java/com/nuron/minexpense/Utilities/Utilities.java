@@ -2,6 +2,7 @@ package com.nuron.minexpense.Utilities;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.util.Log;
 
 import com.nuron.minexpense.R;
 
@@ -33,6 +34,7 @@ public class Utilities {
     public static final int TODAY_DATE = 0;
     public static final int MONTH_DATE = 1;
     public static final int MONTH_DATE_TILL_YESTERDAY = 2;
+    public static final int DATE_TILL_YESTERDAY = 3;
 
     private Context context;
 
@@ -148,7 +150,7 @@ public class Utilities {
         return dayWeight;
     }
 
-    public double getTodayExpenseMax(double expenseSumTillYesterday)
+    public double getTodayExpenseMax(double availableBalanceTillYesterday, double expenseSumTillYesterday)
     {
         double todayWeight, todayExpenseMax;
         Calendar now = Calendar.getInstance();
@@ -188,20 +190,27 @@ public class Utilities {
             todayWeight=1.0;
 
         String monthlyBudget = readFromSharedPref(R.string.Budget_value);
-        if (monthlyBudget.equals("0"))
-            return  0;
 
-        double amountLeft = Double.parseDouble(monthlyBudget) - expenseSumTillYesterday;
+        double amountLeft;
+        String useIncome = readFromSharedPref(R.string.Use_Income);
+
+        if (useIncome.equals("0"))
+            amountLeft = Double.parseDouble(monthlyBudget) - expenseSumTillYesterday;
+        else
+            amountLeft = availableBalanceTillYesterday;
 
         if(amountLeft < 0)
             return 0;
 
-        int daysLeftInMonth = now.getActualMaximum(Calendar.DAY_OF_MONTH) - now.get(Calendar.DAY_OF_MONTH);
+        int daysLeftInMonth = now.getActualMaximum(Calendar.DAY_OF_MONTH) - now.get(Calendar.DAY_OF_MONTH) + 1;
 
         double newDailyBudget = amountLeft /(double)daysLeftInMonth;
 
         todayExpenseMax = todayWeight * newDailyBudget;
-        writeToSharedPref(R.string.Today_Expense_Max, String.valueOf(todayExpenseMax));
+
+        Log.d("1", "availableBalanceTillYesterday = " + availableBalanceTillYesterday + "expenseSumTillYesterday =" + expenseSumTillYesterday);
+        Log.d("1", "todayExpenseMax = " + todayExpenseMax);
+
         return todayExpenseMax;
     }
 
@@ -231,8 +240,8 @@ public class Utilities {
         return sharedPref.getString(context.getString(stringID), "0");
     }
 
-    public String[] getFirstAndLastDate(int isMonth) {
-        if (isMonth == MONTH_DATE)
+    public String[] getFirstAndLastDate(int dateType) {
+        if (dateType == MONTH_DATE)
         {
             Calendar cal = Calendar.getInstance();
             cal.set(Calendar.DATE, 1);
@@ -244,19 +253,19 @@ public class Utilities {
             String monthStart = dateFormat.format(firstDate) + " 00:00:00";
             String monthEnd = dateFormat.format(lastDate) + " 23:59:59";
             return new String[]{monthStart, monthEnd};
-        } else if (isMonth == TODAY_DATE) {
+        } else if (dateType == TODAY_DATE) {
             DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
             Date date = new Date();
             String today_start = dateFormat.format(date) + " 00:00:00";
             String today_end = dateFormat.format(date) + " 23:59:59";
 
             return new String[]{today_start, today_end};
-        } else if (isMonth == MONTH_DATE_TILL_YESTERDAY) {
+        } else if (dateType == MONTH_DATE_TILL_YESTERDAY) {
             Calendar now = Calendar.getInstance();
 
             if (now.get(Calendar.DAY_OF_MONTH) == 1) {
-                String monthYesterday_start = "1000-10-10" + " 00:00:00";
-                String monthYesterday_end = "1000-10-10" + " 23:59:59";
+                String monthYesterday_start = "1900-10-10" + " 00:00:00";
+                String monthYesterday_end = "1900-10-10" + " 23:59:59";
                 return new String[]{monthYesterday_start, monthYesterday_end};
             } else {
                 Calendar cal = Calendar.getInstance();
@@ -273,6 +282,18 @@ public class Utilities {
 
                 return new String[]{monthYesterday_start, monthYesterday_end};
             }
+        } else if (dateType == DATE_TILL_YESTERDAY) {
+            Calendar now = Calendar.getInstance();
+            Calendar cal = Calendar.getInstance();
+            cal.set(Calendar.DATE, now.get(Calendar.DAY_OF_MONTH) - 1);
+            Date lastDate = cal.getTime();
+
+            DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
+
+            String yesterday_start = "1900-01-01" + " 00:00:00";
+            String yesterday_end = dateFormat.format(lastDate) + " 23:59:59";
+
+            return new String[]{yesterday_start, yesterday_end};
         }
         return null;
     }

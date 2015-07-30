@@ -103,34 +103,6 @@ public class Homepage extends AppCompatActivity implements
         fragmentTransaction.commit();
     }
 
-    private void updateAvailableBalance(Cursor cursor) {
-
-        Bundle transactionSumBundle = new Bundle();
-
-        transactionSumBundle.putString("income_sum", "0");
-        transactionSumBundle.putString("expense_sum", "0");
-
-        while (cursor.moveToNext()) {
-            switch (cursor.getString(0)) {
-                case "0":
-                    transactionSumBundle.putString("income_sum", cursor.getString(1));
-                    break;
-                case "1":
-                    transactionSumBundle.putString("expense_sum", cursor.getString(1));
-                    break;
-            }
-        }
-
-        double income_sum_final = Double.parseDouble(transactionSumBundle.getString("income_sum"));
-        double expense_sum_final = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
-
-
-        DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-        formatter.setRoundingMode(RoundingMode.HALF_UP);
-
-        double availableBalance = income_sum_final - expense_sum_final;
-        available_balance.setText(formatter.format(availableBalance));
-    }
 
     //region Fragment Listeners
     @Override
@@ -530,4 +502,33 @@ public class Homepage extends AppCompatActivity implements
     }
     //endregion
 
+    private void updateAvailableBalance(Cursor cursor) {
+
+        Bundle transactionSumBundle = new Bundle();
+
+        transactionSumBundle.putString("income_sum", "0");
+        transactionSumBundle.putString("expense_sum", "0");
+
+        while (cursor.moveToNext()) {
+            switch (cursor.getString(0)) {
+                case "0":
+                    transactionSumBundle.putString("income_sum", cursor.getString(1));
+                    break;
+                case "1":
+                    transactionSumBundle.putString("expense_sum", cursor.getString(1));
+                    break;
+            }
+        }
+
+        double income_sum_final = Double.parseDouble(transactionSumBundle.getString("income_sum"));
+        double expense_sum_final = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
+
+
+        DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
+        formatter.setRoundingMode(RoundingMode.HALF_UP);
+
+        double availableBalance = income_sum_final - expense_sum_final;
+        utilities.writeToSharedPref(R.string.Available_Balance, formatter.format(availableBalance));
+        available_balance.setText(formatter.format(availableBalance));
+    }
 }

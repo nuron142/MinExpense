@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.CursorLoader;
 import android.support.v4.content.Loader;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,11 +38,12 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     public static final String TAG = "MinExpenseFragment";
     AddExpenseClickListener mListener;
     View rootView, headerView = null;
-    double monthlyExpenseTillYesterday = 0;
+    double monthlyExpenseTillYesterday = 0, availableBalanceTillYesterday = 0;
     private TransactionCursorAdaptor transactionCursorAdapter;
     private ListView mListView;
     private Handler handler;
     private Utilities utilities;
+    private int count = 0;
 
     //region Fragment overide functions
     @Override
@@ -110,7 +112,10 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
     //region Loader Implementation
     @Override
     public Loader<Cursor> onCreateLoader(int id, Bundle args) {
-        if (id == 0) {
+
+
+        if (id == 0)  // Today Transactions List
+        {
             String[] today = utilities.getFirstAndLastDate(Utilities.TODAY_DATE);
             String today_start = today[0];
             String today_end = today[1];
@@ -121,22 +126,31 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
             Uri uri = TransactionProvider.CONTENT_URI;
             return new CursorLoader(getActivity(), uri, null, selection, selectionArgs, null);
-        } else if (id == 1) {
-            String[] month = utilities.getFirstAndLastDate(Utilities.MONTH_DATE_TILL_YESTERDAY);
+        } else if (id == 1) // Month Till Yesterday Sum
+        {
+            Log.d("1", "count = " + count++);
+            String[] date;
+            String useIncome = utilities.readFromSharedPref(R.string.Use_Income);
 
-            String month_start = month[0];
-            String month_end = month[1];
+            if (useIncome.equals("0"))
+                date = utilities.getFirstAndLastDate(Utilities.MONTH_DATE_TILL_YESTERDAY);
+            else
+                date = utilities.getFirstAndLastDate(Utilities.DATE_TILL_YESTERDAY);
 
-            String[] projection = new String[]{"SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
+            String date_start = date[0];
+            String date_end = date[1];
 
-            String selection = SQLiteDBHelper.TRANSACTION_TIME + " >= ? AND " + SQLiteDBHelper.TRANSACTION_TIME + " <= ? AND "
-                    + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE + " == 1";
+            String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
+                    "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
+            String selection = SQLiteDBHelper.TRANSACTION_TIME + " >= ? AND " + SQLiteDBHelper.TRANSACTION_TIME + " <= ? "
+                    + " GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
 
-            String[] selectionArgs = new String[]{month_start, month_end};
+            String[] selectionArgs = new String[]{date_start, date_end};
 
             Uri uri = TransactionProvider.CONTENT_URI;
             return new CursorLoader(getActivity(), uri, projection, selection, selectionArgs, null);
-        } else {
+        } else // Today Sum
+        {
             String[] today = utilities.getFirstAndLastDate(Utilities.TODAY_DATE);
 
             String today_start = today[0];
@@ -144,7 +158,9 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
             String[] projection = new String[]{SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE,
                     "SUM(" + SQLiteDBHelper.TRANSACTION_AMOUNT + ") AS SUM_TOTAL"};
-            String selection = SQLiteDBHelper.TRANSACTION_TIME + " BETWEEN ? AND ? " + " GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
+
+            String selection = SQLiteDBHelper.TRANSACTION_TIME + " >= ? AND " + SQLiteDBHelper.TRANSACTION_TIME + " <= ? "
+                    + " GROUP BY " + SQLiteDBHelper.TRANSACTION_INCOMEOREXPENSE;
 
             String[] selectionArgs = new String[]{today_start, today_end};
 
@@ -173,11 +189,11 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
             });
         } else {
             final Cursor cursor2 = cursor;
-            handler.post(new Runnable() {
+            handler.postDelayed(new Runnable() {
                 public void run() {
                     updateSum(cursor2);
                 }
-            });
+            }, 20);
         }
     }
 
@@ -190,19 +206,26 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
 
     public void updateTodayExpenseMax(Cursor cursor) {
-        double monthlyExpense_text;
-        if (cursor != null && cursor.moveToFirst()) {
-            if (cursor.getString(0) != null)
-                monthlyExpenseTillYesterday = Double.parseDouble(cursor.getString(0));
+        Bundle transactionSumBundle = new Bundle();
+
+        transactionSumBundle.putString("income_sum", "0");
+        transactionSumBundle.putString("expense_sum", "0");
+        while (cursor.moveToNext()) {
+            switch (cursor.getString(0)) {
+                case "0":
+                    transactionSumBundle.putString("income_sum", cursor.getString(1));
+                    break;
+                case "1":
+                    transactionSumBundle.putString("expense_sum", cursor.getString(1));
+                    break;
+            }
         }
 
-        monthlyExpense_text = utilities.getTodayExpenseMax(monthlyExpenseTillYesterday);
+        double incomeTillYesterday = Double.parseDouble(transactionSumBundle.getString("income_sum"));
+        double expenseTillYesterday = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
 
-        DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
-        formatter.setRoundingMode(RoundingMode.HALF_UP);
-
-        TextView today_max_text = (TextView) rootView.findViewById(R.id.today_expenseMax_text);
-        today_max_text.setText("/" + formatter.format(monthlyExpense_text));
+        availableBalanceTillYesterday = incomeTillYesterday - expenseTillYesterday; // For Income based Max
+        monthlyExpenseTillYesterday = expenseTillYesterday; // For Budget based Max
     }
 
     public void updateSum(Cursor cursor) {
@@ -225,8 +248,22 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         double income_sum = Double.parseDouble(transactionSumBundle.getString("income_sum"));
         double expense_sum = Double.parseDouble(transactionSumBundle.getString("expense_sum"));
 
+        double todayExpenseMax = utilities.getTodayExpenseMax(availableBalanceTillYesterday + income_sum, monthlyExpenseTillYesterday);
+
+        if (todayExpenseMax == 0) {
+            String useIncome = utilities.readFromSharedPref(R.string.Use_Income);
+            if (useIncome.equals("0")) {
+                utilities.writeToSharedPref(R.string.Use_Income, "1");
+                getActivity().getContentResolver().notifyChange(TransactionProvider.CONTENT_URI, null);
+            }
+
+        }
+
         DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         formatter.setRoundingMode(RoundingMode.HALF_UP);
+
+        TextView today_max_text = (TextView) rootView.findViewById(R.id.today_expenseMax_text);
+        today_max_text.setText("/" + formatter.format(todayExpenseMax));
 
         if (headerView != null) {
             TextView income_header = (TextView) headerView.findViewById(R.id.list_header_income);
@@ -239,8 +276,6 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         TextView today_expense = (TextView) rootView.findViewById(R.id.today_expense);
         today_expense.setText("₹ " + formatter.format(expense_sum));
 
-        double todayExpenseMax = Double.parseDouble(utilities.readFromSharedPref(R.string.Today_Expense_Max));
-
         ProgressBar pb = (ProgressBar) rootView.findViewById(R.id.progressBarLevel);
         double left_sum = todayExpenseMax - expense_sum;
 
@@ -250,9 +285,13 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
         TextView leftTodayText = (TextView) rootView.findViewById(R.id.today_left_text);
         leftTodayText.setText("₹ " + formatter.format(left_sum));
 
+        Log.d("1", "left_sum = " + left_sum);
+
         int left_sum_percent = (int) ((100 * left_sum) / todayExpenseMax);
 
-        if (left_sum_percent >= 100)
+        Log.d("1", "left_sum_percent = " + left_sum_percent);
+
+        if (left_sum_percent >= 100 || left_sum_percent <= 1)
             pb.setProgress(1);
         else
             pb.setProgress(100 - left_sum_percent);

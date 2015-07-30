@@ -67,11 +67,18 @@ public class BudgetFragment extends Fragment {
         DecimalFormat formatter = new DecimalFormat("#", DecimalFormatSymbols.getInstance(Locale.ENGLISH));
         formatter.setRoundingMode(RoundingMode.HALF_UP);
 
-        CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.checkBoxRandom);
-        if (checkBox.isChecked())
+        CheckBox checkBoxRandom = (CheckBox) rootView.findViewById(R.id.checkBoxRandom);
+        if (checkBoxRandom.isChecked())
             utilities.writeToSharedPref(R.string.Use_Random_Max_Expense, "1");
         else
             utilities.writeToSharedPref(R.string.Use_Random_Max_Expense, "0");
+
+
+        CheckBox checkUseIncome = (CheckBox) rootView.findViewById(R.id.checkUseIncome);
+        if (checkUseIncome.isChecked())
+            utilities.writeToSharedPref(R.string.Use_Income, "1");
+        else
+            utilities.writeToSharedPref(R.string.Use_Income, "0");
 
         double newBudget;
         if (set_budget.getText().toString().equals(""))
@@ -99,12 +106,19 @@ public class BudgetFragment extends Fragment {
         TextView current_budget_text = (TextView) rootView.findViewById(R.id.current_budget_drawer);
         current_budget_text.setText("₹ " + currentBudget);
 
-        CheckBox checkBox = (CheckBox) rootView.findViewById(R.id.checkBoxRandom);
+        CheckBox checkBoxRandom = (CheckBox) rootView.findViewById(R.id.checkBoxRandom);
         String useRandomMaxExpense = utilities.readFromSharedPref(R.string.Use_Random_Max_Expense);
         if (useRandomMaxExpense.equals("0"))
-            checkBox.setChecked(false);
+            checkBoxRandom.setChecked(false);
         else
-            checkBox.setChecked(true);
+            checkBoxRandom.setChecked(true);
+
+        CheckBox checkUseIncome = (CheckBox) rootView.findViewById(R.id.checkUseIncome);
+        String useIncome = utilities.readFromSharedPref(R.string.Use_Income);
+        if (useIncome.equals("0"))
+            checkUseIncome.setChecked(false);
+        else
+            checkUseIncome.setChecked(true);
     }
 
     public interface saveBudgetListener {

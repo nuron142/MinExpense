@@ -16,5 +16,6 @@
     <string name="Available_Balance">AVAILABLE_BALANCE</string>
     <string name="Monthly_Expense_Total">MONTHLY_EXPENSE_TOTAL</string>
     <string name="Use_Random_Max_Expense">USE_RANDOM_MAX_EXPENSE</string>
+    <string name="Use_Income">USE_INCOME</string>
 
 </resources>

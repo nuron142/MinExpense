@@ -82,7 +82,7 @@
                     android:layout_marginEnd="24dp"
                     android:layout_marginStart="12dp"
                     android:layout_weight="1"
-                    android:text="₹ 900"
+                    android:text="₹ 0"
                     android:textColor="@android:color/white"
                     android:textSize="20sp" />
 
@@ -133,11 +133,21 @@
                 android:id="@+id/checkBoxRandom"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_alignStart="@+id/checkUseIncome"
                 android:layout_below="@+id/set_budget_text"
-                android:layout_centerHorizontal="true"
                 android:layout_marginTop="20dp"
                 android:checked="true"
                 android:text="Use random max expense" />
+
+            <CheckBox
+                android:id="@+id/checkUseIncome"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/checkBoxRandom"
+                android:layout_centerHorizontal="true"
+                android:layout_marginTop="10dp"
+                android:checked="false"
+                android:text="Use available balance instead" />
 
         </RelativeLayout>
     </LinearLayout>
