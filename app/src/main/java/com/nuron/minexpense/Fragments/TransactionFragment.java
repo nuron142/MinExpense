@@ -230,13 +230,20 @@ public class TransactionFragment extends Fragment implements LoaderManager.Loade
         savedText.setText(formatter.format(saved));
 
         ProgressBar pb = (ProgressBar) rootView.findViewById(R.id.progressBarLevel);
-        double left_sum = (100 * (saved)) / (savedPrevious + incomeCurrent);
-        if (left_sum <= 0)
-            pb.setProgress(100);
-        else if (left_sum >= 100)
+        int left_sum = (int) ((100 * (saved)) / (savedPrevious + incomeCurrent));
+//        if (left_sum <= 0)
+//            pb.setProgress(100);
+//        else if (left_sum >= 100)
+//            pb.setProgress(1);
+//        else
+//            pb.setProgress((int) left_sum);
+
+//        int left_sum_percent = (int) ((100 * left_sum) / todayExpenseMax);
+//
+        if (left_sum >= 100)
             pb.setProgress(1);
         else
-            pb.setProgress((int) left_sum);
+            pb.setProgress(100 - left_sum);
 
     }
 }

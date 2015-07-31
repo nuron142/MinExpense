@@ -291,8 +291,10 @@ public class HomePageFragment extends Fragment implements LoaderManager.LoaderCa
 
         Log.d("1", "left_sum_percent = " + left_sum_percent);
 
-        if (left_sum_percent >= 100 || left_sum_percent <= 1)
+        if (left_sum_percent >= 100)
             pb.setProgress(1);
+//        else if(left_sum_percent <= 0)
+//            pb.setProgress(100);
         else
             pb.setProgress(100 - left_sum_percent);
 
